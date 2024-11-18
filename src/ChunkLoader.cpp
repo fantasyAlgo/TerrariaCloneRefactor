@@ -32,16 +32,8 @@ void loadChunk(unsigned char map[][MAP_HEIGHT], int current_chunk, ValueNoise1D 
 
   float flowerProb;
   int iFlowerPlace = -50;
-  /*for (int i = start_chunk; i < start_chunk+CHUNK_SIZE; i++) {
-    for (int j = 0; j < MAP_HEIGHT; j++) {
-      map[i][j] = 0;
-      if (j < MAP_HEIGHT/2)
-        map[i][j] = 2;
-    }
-  }*/
-
   for (int i = start_chunk; i < start_chunk+CHUNK_SIZE; i++){
-    yNoise = (MAP_HEIGHT/2 - (noise.eval(((float)i)/NOISE_VARIABILITY))*MAP_HEIGHT/4);
+    yNoise = ((int)(MAP_HEIGHT/2) - (noise.eval(((float)i)/NOISE_VARIABILITY))*MAP_HEIGHT/4);
     grassUpPlaced = false;
     depthHollow = 0;
     flowerProb = (i - iFlowerPlace > 2) ? rand() % 100 : 0;

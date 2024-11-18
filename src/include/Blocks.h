@@ -14,8 +14,8 @@ enum BlockType{
     WATER_LEFT,
     WATER_DOWN,
     TORCH,
-	WOOD,
-	WORKBENCH,
+    WOOD,
+    WORKBENCH,
 	EMPTY2,
 	EMPTY3,
 	EMPTY4,
@@ -202,10 +202,10 @@ enum BlockType{
 	EMPTY185,
 	EMPTY186,
 	EMPTY187,
-	TREE_BRANCH,
+    TREE_BRANCH,
     TREE_TRUNK,
     TREE_TOP,
-	LAST_BLOCK
+  LAST_BLOCK
 };
 
 enum ToolType{
@@ -216,9 +216,9 @@ enum ToolType{
     AXE,
     BUCKET,
     SLIME_REMAINS,
-	WOOD_ARMOR_TOP,
-	WOOD_ARMOR_BODY,
-	WOOD_ARMOR_LEGS,
+    WOOD_ARMOR_TOP,
+    WOOD_ARMOR_BODY,
+    WOOD_ARMOR_LEGS,
     LAST_TOOL,
 };
 

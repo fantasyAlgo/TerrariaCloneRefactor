@@ -1,7 +1,7 @@
 #pragma once
 
-constexpr int SCREEN_WIDTH = 1080;
-constexpr int SCREEN_HEIGHT = 1080;
+constexpr int SCREEN_WIDTH = 800;
+constexpr int SCREEN_HEIGHT = 900;
 constexpr int BLOCK_SIZE_X = 24;
 constexpr int BLOCK_SIZE_Y = 24;
 

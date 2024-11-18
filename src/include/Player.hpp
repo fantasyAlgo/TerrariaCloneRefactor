@@ -9,4 +9,6 @@ public:
   void update();
   void render();
   void inputHandler(float deltaTime);
+  Vector2 getPos();
+  Vector2 getTile();
 };
