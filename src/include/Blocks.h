@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <raylib.h>
+#include <vector>
 enum BlockType{
     EMPTY,
     DIRT,

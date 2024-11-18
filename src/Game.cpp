@@ -22,18 +22,16 @@ void Game::init(){
 }
 
 void Game::update(float deltaTime){
+  ChunkLoader::loadNearbyChunks(this->isChunkLoaded, this->map, this->player.getTile().x/CHUNK_SIZE, this->noise, this->noise2d);
 }
 void Game::inputHandler(float deltaTime){
   this->player.inputHandler(deltaTime);
 }
 void Game::render(){
-  this->player.render();
   Vector2 starting_point = {(floor(this->player.getPos().x) - this->player.getPos().x)*BLOCK_SIZE_X, 
                             (floor(this->player.getPos().y) - this->player.getPos().y)*BLOCK_SIZE_Y};
-  ChunkLoader::loadNearbyChunks(this->isChunkLoaded, this->map, this->player.getTile().x/CHUNK_SIZE, this->noise, this->noise2d);
 
-  //ChunkLoader::loadChunk(this->map, this->player.pos.x - CHUNK_SIZE/2, this->noise, this->noise2d);
-
+  // Making the grid lines (for debugging purposes)
   for (int i = starting_point.x; i < SCREEN_WIDTH; i+=BLOCK_SIZE_X) DrawLine(i, 0, i, SCREEN_HEIGHT, BLACK);
   for (int i = starting_point.y; i < SCREEN_HEIGHT; i+=BLOCK_SIZE_Y) DrawLine(0, i, SCREEN_WIDTH, i, BLACK);
 
@@ -41,15 +39,15 @@ void Game::render(){
   int xTile = floor(player.getTile().x)-((float)SCREEN_WIDTH/(float)BLOCK_SIZE_X); 
   for (int i = starting_point.x; i < SCREEN_WIDTH; i+=BLOCK_SIZE_X){
     yTile = floor(this->player.getTile().y)-((float)SCREEN_HEIGHT/(float)BLOCK_SIZE_Y)-2;
-    //std::cout << "why tile: " << yTile << std::endl;
     for (int j = starting_point.y-BLOCK_SIZE_Y; j < SCREEN_HEIGHT; j+=BLOCK_SIZE_Y){
       yTile++;
-      if (map[xTile][yTile] != 0){
-        DrawRectangle(i, j, BLOCK_SIZE_X, BLOCK_SIZE_Y, BLACK);
-      }
+      if (map[xTile][yTile] != 0)
+        DrawTexturePro(Textures::all_atlas, 
+                       {(float)Textures::tileAtlas[map[xTile][yTile]], 0, 16, 16},
+                       {(float)i, (float)j, BLOCK_SIZE_X, BLOCK_SIZE_Y}, {0,0}, 0, WHITE);
+
     }
     xTile++;
   }
-
-
+  this->player.render();
 }

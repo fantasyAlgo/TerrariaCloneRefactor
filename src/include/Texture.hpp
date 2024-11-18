@@ -13,6 +13,8 @@ namespace Textures {
   extern int torchAtlas;
   extern int woodAtlas;
 
+  extern int tileAtlas[255];
+
   void load();
 }
 
