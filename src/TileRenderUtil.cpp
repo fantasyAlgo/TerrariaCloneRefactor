@@ -58,7 +58,7 @@ Vector2 ambientBlock(unsigned char map[][MAP_HEIGHT], int i, int j, int type, Va
     auto isCollisionTile = [type, map](int i, int j) -> bool {return TileRenderUtil::isCollisionTileHelper(map, i, j, type);};
     //std::cout << "noise: " << noise1d.eval(50.0f + ((float)i)/10.0f) << std::endl;
     if (!isCollisionTile(i+1,j) && !isCollisionTile(i,j+1) && !isCollisionTile(i-1,j) && isCollisionTile(i,j-1))
-        return {1+noise1d.eval(50.0f + ((float)i)/10.0f)*3, 0};
+        return {3, 0};
     else if (!isCollisionTile(i+1,j) && isCollisionTile(i,j+1) && !isCollisionTile(i-1,j) && isCollisionTile(i,j-1))
         return {1, 0};
     else if (!isCollisionTile(i+1,j) && isCollisionTile(i,j+1) && !isCollisionTile(i-1,j) && !isCollisionTile(i,j-1))
@@ -102,6 +102,23 @@ Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type,
     }
     return {0,0};
 }
+
+Rectangle getTile(int x, int y, int type){
+    if (type == 199){ return {(float)x*22, (float)y*BLOCK_CHUNK, BLOCK_CHUNK, BLOCK_CHUNK}; }
+    return {(float)x*BLOCK_CHUNK, (float)y*BLOCK_CHUNK, BLOCK_CHUNK, BLOCK_CHUNK};
+}
+Rectangle getTileP(Vector2 pos, int type, int time){
+    if (type == 199){ return {(float)pos.x*22, (float)pos.y*22, BLOCK_CHUNK, BLOCK_CHUNK}; }
+    if (type == (int)WORKBENCH) return {pos.x*22.0f, 0, 11, 20};
+    
+    if (isWaterTile(type))
+        return {pos.x*16.0f, pos.y*16.0f+80.0f*(1.0f+(float)(time%150)/10.0f), 16, 16};
+    return {(float)pos.x*BLOCK_CHUNK, (float)pos.y*BLOCK_CHUNK, BLOCK_CHUNK-1, BLOCK_CHUNK-1};
+}
+Rectangle getTileWithSize(int x, int y, float size){
+    return {(float)x*BLOCK_CHUNK, (float)y*BLOCK_CHUNK, size, size};
+}
+
 
 }
 namespace TileUpdateUtil{

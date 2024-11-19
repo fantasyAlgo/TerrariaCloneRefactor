@@ -8,13 +8,13 @@ int main(void){
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "my new terraria clone");
   Game game;
   float deltaTime;
-  SetTargetFPS(144);
+  //SetTargetFPS(144);
   while (!WindowShouldClose()){ 
     deltaTime = GetFrameTime();
     game.inputHandler(deltaTime);
     game.update(deltaTime);
     BeginDrawing();
-      ClearBackground(RAYWHITE);
+      ClearBackground({126, 197, 222, 255});
       game.render();
       DrawFPS(10, 10);
     EndDrawing();

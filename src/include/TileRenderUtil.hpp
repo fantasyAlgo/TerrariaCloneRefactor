@@ -3,9 +3,6 @@
 #include "Settings.hpp"
 #include <raylib.h>
 
-#include <utility>
-
-
 namespace TileRenderUtil {
 
 bool isWater(unsigned char map[][MAP_HEIGHT], int i, int j);
@@ -15,6 +12,10 @@ bool isCollisionTileHelper(unsigned char map[][MAP_HEIGHT], int i, int j, int ty
 Color addLightGreen(Color color, int value);
 Vector2 ambientBlock(unsigned char map[][MAP_HEIGHT], int i, int j, int type, ValueNoise1D  &noise1d);
 Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type, ValueNoise1D  &noise1d);
+
+Rectangle getTile(int x, int y, int type = -1);
+Rectangle getTileP(Vector2 pos, int type = 0, int time = 1);
+Rectangle getTileWithSize(int x, int y, float size);
 
 }
 namespace TileUpdateUtil{
