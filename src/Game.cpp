@@ -3,9 +3,11 @@
 #include "include/Player.hpp"
 #include "include/Settings.hpp"
 #include "include/Texture.hpp"
+#include "include/TileRenderUtil.hpp"
 
 #include <cmath>
 #include <iostream>
+#include <ostream>
 #include <raylib.h>
 
 
@@ -37,14 +39,19 @@ void Game::render(){
 
   int yTile;
   int xTile = floor(player.getTile().x)-((float)SCREEN_WIDTH/(float)BLOCK_SIZE_X); 
+
+  Vector2 tileAmbient;
   for (int i = starting_point.x; i < SCREEN_WIDTH; i+=BLOCK_SIZE_X){
     yTile = floor(this->player.getTile().y)-((float)SCREEN_HEIGHT/(float)BLOCK_SIZE_Y)-2;
     for (int j = starting_point.y-BLOCK_SIZE_Y; j < SCREEN_HEIGHT; j+=BLOCK_SIZE_Y){
       yTile++;
-      if (map[xTile][yTile] != 0)
+      if (map[xTile][yTile] != 0){
+        tileAmbient = TileRenderUtil::ambientBlock(map, xTile, yTile, map[xTile][yTile], this->noise);
+        std::cout << tileAmbient.x << " " << tileAmbient.y << std::endl;
         DrawTexturePro(Textures::all_atlas, 
-                       {(float)Textures::tileAtlas[map[xTile][yTile]], 0, 16, 16},
+                       {(float)Textures::tileAtlas[map[xTile][yTile]]+tileAmbient.x, tileAmbient.y, 16, 16},
                        {(float)i, (float)j, BLOCK_SIZE_X, BLOCK_SIZE_Y}, {0,0}, 0, WHITE);
+      }
 
     }
     xTile++;

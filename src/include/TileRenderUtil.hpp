@@ -2,7 +2,10 @@
 #include "PerlinNoise.hpp"
 #include "Settings.hpp"
 #include <raylib.h>
+
 #include <utility>
+
+
 namespace TileRenderUtil {
 
 bool isWater(unsigned char map[][MAP_HEIGHT], int i, int j);
@@ -16,11 +19,11 @@ Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type,
 }
 namespace TileUpdateUtil{
 
-bool hasSource(int iTile, int jTile);
-void removeUnSourcedWater(int iTile, int jTile, ValueNoise1D noise);
-void updateWater(int iTile, int jTile);
-void updateTree(int iTile, int jTile);
-int followUpTree(int iTile, int jTile);
+bool hasSource(unsigned char map[][MAP_HEIGHT], int iTile, int jTile);
+void removeUnSourcedWater(unsigned char map[][MAP_HEIGHT], int iTile, int jTile, ValueNoise1D noise);
+void updateWater(unsigned char map[][MAP_HEIGHT], int iTile, int jTile);
+void updateTree(unsigned char map[][MAP_HEIGHT], int iTile, int jTile);
+int followUpTree(unsigned char map[][MAP_HEIGHT], int iTile, int jTile);
 double distanceTiles(int iTile, int jTile, int iTile2, int jTile2);
 
 }

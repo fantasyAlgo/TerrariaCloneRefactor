@@ -39,6 +39,7 @@ Vector2 ambientBlock(unsigned char map[][MAP_HEIGHT], int i, int j, int type, Va
     if (type == (int)WORKBENCH)
         return {map[i-1][j] == WORKBENCH ? 1.0f : 0.0f, 0.0f};
     if (isWaterTile(type)){
+        return {0,0};
         if (isWater(map, i+1, j) && isWater(map, i, j+1) && isWater(map, i-1, j) && isWater(map, i, j-1)) return {1, 3};
 
         else if (!isWater(map, i+1, j) && isWater(map, i, j+1) &&          !isWater(map, i-1, j) && !isWater(map, i, j-1)) return {1, 1};
@@ -53,7 +54,8 @@ Vector2 ambientBlock(unsigned char map[][MAP_HEIGHT], int i, int j, int type, Va
         else if (isWater(map, i+1, j)) return {1, 3};
         return {0, 0};
     }
-    auto isCollisionTile = [type, map](int i, int j) -> bool {return isCollisionTileHelper(map, i, j, type);};
+
+    auto isCollisionTile = [type, map](int i, int j) -> bool {return TileRenderUtil::isCollisionTileHelper(map, i, j, type);};
     //std::cout << "noise: " << noise1d.eval(50.0f + ((float)i)/10.0f) << std::endl;
     if (!isCollisionTile(i+1,j) && !isCollisionTile(i,j+1) && !isCollisionTile(i-1,j) && isCollisionTile(i,j-1))
         return {1+noise1d.eval(50.0f + ((float)i)/10.0f)*3, 0};
@@ -104,11 +106,69 @@ Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type,
 }
 namespace TileUpdateUtil{
 
-bool hasSource(int iTile, int jTile);
-void removeUnSourcedWater(int iTile, int jTile, ValueNoise1D noise);
-void updateWater(int iTile, int jTile);
-void updateTree(int iTile, int jTile);
-int followUpTree(int iTile, int jTile);
-double distanceTiles(int iTile, int jTile, int iTile2, int jTile2);
+bool hasSource(unsigned char map[][MAP_HEIGHT], int iTile, int jTile){
+    switch (map[iTile][jTile]){
+        case WATER_LEFT:
+            return TileRenderUtil::isWater(map, iTile+1, jTile);
+        case WATER_RIGHT:
+            return TileRenderUtil::isWater(map, iTile-1, jTile);
+        case WATER_DOWN:
+            return TileRenderUtil::isWater(map, iTile, jTile-1);
+        case SOURCE_WATER:
+            return true;
+        default:
+            return false;
+    }
+}
+void removeUnSourcedWater(unsigned char map[][MAP_HEIGHT], int iTile, int jTile, ValueNoise1D noise){
+    if (!hasSource(map, iTile, jTile)){
+        if (jTile > (MAP_HEIGHT/2 - (noise.eval(((float)(iTile))/NOISE_VARIABILITY))*MAP_HEIGHT/4)+10)
+            map[iTile][jTile] = WALL_DIRT;
+        else map[iTile][jTile] = EMPTY;
+    }
+}
+void updateWater(unsigned char map[][MAP_HEIGHT], int iTile, int jTile){
+    if (!hasSource(map, iTile, jTile)) return;
+    if (TileRenderUtil::isCollisionTileHelper(map, iTile, jTile + 1) && !TileRenderUtil::isWater(map, iTile, jTile+1)){
+        map[iTile][jTile+1] = WATER_DOWN;
+    }else if (!TileRenderUtil::isCollisionTileHelper(map, iTile, jTile + 1) && !TileRenderUtil::isWater(map, iTile, jTile+1)){
+        if (TileRenderUtil::isCollisionTileHelper(map, iTile+1, jTile) && !TileRenderUtil::isWater(map, iTile+1, jTile)){
+            map[iTile+1][jTile] = WATER_RIGHT;
+        }
+        if (TileRenderUtil::isCollisionTileHelper(map, iTile - 1, jTile) && !TileRenderUtil::isWater(map, iTile-1, jTile)){
+            map[iTile-1][jTile] = WATER_LEFT;
+        }
+    }
+}
+void updateTree(unsigned char map[][MAP_HEIGHT], int iTile, int jTile){
+    if (map[iTile][jTile] != TREE_TRUNK && map[iTile][jTile] != TREE_TOP) return;
+    if (map[iTile][jTile] == TREE_TOP && map[iTile][jTile+3] == EMPTY){
+        map[iTile][jTile] = EMPTY;
+    }
+    if (map[iTile][jTile] != TREE_TOP && map[iTile][jTile+1] == EMPTY){
+        map[iTile][jTile] = EMPTY;
+        if (map[iTile+1][jTile] == TREE_BRANCH)
+            map[iTile+1][jTile] = EMPTY;
+        if (map[iTile-1][jTile] == TREE_BRANCH)
+            map[iTile-1][jTile] = EMPTY;
+    }
+}
+int followUpTree(unsigned char map[][MAP_HEIGHT], int iTile, int jTile){
+    int i = iTile;
+    int j = jTile;
+    int nTrunks = 0;
+    while (map[i][j] == TREE_TRUNK){
+        j--;
+        nTrunks += map[i-1][j] == TREE_BRANCH;
+        nTrunks += map[i+1][j] == TREE_BRANCH;
+        nTrunks++;
+    }
+    return nTrunks+1;
+}
+
+double distanceTiles(int iTile, int jTile, int iTile2, int jTile2){
+    return sqrt((double)(iTile- iTile2)*(iTile- iTile2) + (double)(jTile - jTile2)*(jTile - jTile2));
+}
+
 
 }

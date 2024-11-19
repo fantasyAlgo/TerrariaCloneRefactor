@@ -27,7 +27,7 @@ add_executable(raylib_project
   src/Player.cpp
   src/Texture.cpp
   src/ChunkLoader.cpp
-  src/TileRenderUtil
+  src/TileRenderUtil.cpp
 )
 target_link_libraries(raylib_project raylib)
 
