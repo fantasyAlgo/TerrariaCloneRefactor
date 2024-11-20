@@ -8,7 +8,7 @@ int main(void){
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "my new terraria clone");
   Game game;
   float deltaTime;
-  //SetTargetFPS(144);
+  //SetTargetFPS(60);
   while (!WindowShouldClose()){ 
     deltaTime = GetFrameTime();
     game.inputHandler(deltaTime);

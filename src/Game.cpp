@@ -45,17 +45,29 @@ void Game::render(){
 
   Vector2 tileAmbient;
   Rectangle tileRect;
+  //std::cout <<SCREEN_WIDTH/BLOCK_SIZE_X << std::endl;
   for (int i = starting_point.x; i < SCREEN_WIDTH; i+=BLOCK_SIZE_X){
     yTile = floor(this->player.getPos().y)-((float)SCREEN_HEIGHT/(float)BLOCK_SIZE_Y)/2-2;
     for (int j = starting_point.y-BLOCK_SIZE_Y; j < SCREEN_HEIGHT; j+=BLOCK_SIZE_Y){
       yTile++;
-      if (map[xTile][yTile] != 0){
+      if (map[xTile][yTile] != 0 && map[xTile][yTile] < TREE_BRANCH){
         tileRect = TileRenderUtil::getTileP(TileRenderUtil::ambientBlock(map, xTile, yTile, map[xTile][yTile], this->noise), map[xTile][yTile]);
         tileRect.x += Textures::tileAtlas[map[xTile][yTile]]; // Add the atlas position
-        //std::cout << tileAmbient.x << " " << tileAmbient.y << std::endl;
         DrawTexturePro(Textures::all_atlas, 
                        tileRect,
                        {(float)i, (float)j, BLOCK_SIZE_X, BLOCK_SIZE_Y}, {0,0}, 0, map[xTile][yTile] == WALL_DIRT ? GRAY : WHITE);
+      }else if (map[xTile][yTile] >= TREE_BRANCH){
+        if (map[xTile][yTile] >= 202){
+          tileRect = TileRenderUtil::getTile(map[xTile][yTile]-202, 0);
+          tileRect.x += Textures::flowersAtlas; // Add the atlas position
+        }else {
+          tileRect = TileRenderUtil::getTileP(TileRenderUtil::treeAmbientTile(map, xTile, yTile, map[xTile][yTile], this->noise), map[xTile][yTile]);
+          tileRect.x += Textures::treeAtlas; // Add the atlas position
+        }
+        DrawTexturePro(Textures::all_atlas, 
+                       tileRect,
+                       {(float)i, (float)j, BLOCK_SIZE_X, BLOCK_SIZE_Y+1}, {0,0}, 0, map[xTile][yTile] == WALL_DIRT ? GRAY : WHITE);
+
       }
 
     }

@@ -17,6 +17,8 @@ extern int flowersAtlas;
 extern int torchAtlas;
 extern int woodAtlas;
 
+extern int playerAtlasPos;
+
 extern int tileAtlas[255];
 
 void load();

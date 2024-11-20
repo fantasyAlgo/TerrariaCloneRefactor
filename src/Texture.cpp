@@ -20,8 +20,9 @@ int treeAtlas;
 int flowersAtlas;
 int torchAtlas;
 int woodAtlas;
-int waterAtlas = 0;
+int waterAtlas;
 
+int playerAtlasPos;
 void load(){
   all_atlas = LoadTexture("src/Assets/spritesheet.png");
   item_entities_atlas = LoadTexture("src/Assets/item_entity_atlas.png");
@@ -33,10 +34,11 @@ void load(){
   flowersAtlas = 288*3;
   woodAtlas = flowersAtlas + 810;
   torchAtlas = woodAtlas + 288;
-  treeAtlas = torchAtlas + 288;
+  treeAtlas = torchAtlas + 132;
   oreAtlas = 4126-48-288;
 
   grassAtlas = 0;
+  playerAtlasPos = 326;
 
   tileAtlas[DIRT] = terrainAtlas;
   tileAtlas[GRASS] = grassAtlas;

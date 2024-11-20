@@ -3,6 +3,7 @@
 #include "include/Blocks.h"
 #include "include/PerlinNoise.hpp"
 #include "include/Settings.hpp"
+#include <iostream>
 #include <raylib.h>
 #include <utility>
 #include <vector>
@@ -91,24 +92,24 @@ Vector2 ambientBlock(unsigned char map[][MAP_HEIGHT], int i, int j, int type, Va
 }
 
 Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type, ValueNoise1D  &noise1d){
-    if (type == 200){
-        if (map[i][j-3] == 201)
-            return {0, 0};
-        return {0, noise1d.eval((i+j)/25)*5};
-    }else if (type == 199){
-        if (map[i-1][j] == 200)
-            return {4, 3+noise1d.eval((i+j)/25)*3};
-        else return {3, 0+noise1d.eval((i+j)/25)*3};
-    }
-    return {0,0};
+  if (type == TREE_TRUNK){
+    if (map[i][j-3] == 201)
+      return {0, 0};
+    return {0, noise1d.eval((i+j)/25)*5};
+  }else if (type == TREE_BRANCH){
+    if (map[i-1][j] == TREE_TRUNK)
+      return {4, 3+noise1d.eval((i+j)/25)*3};
+    return {4, noise1d.eval((i+j)/25)*3};
+  }
+  return {0,0};
 }
 
 Rectangle getTile(int x, int y, int type){
-    if (type == 199){ return {(float)x*22, (float)y*BLOCK_CHUNK, BLOCK_CHUNK, BLOCK_CHUNK}; }
+    if (type == TREE_BRANCH || type == TREE_TRUNK){ return {(float)x*22, (float)y*BLOCK_CHUNK, BLOCK_CHUNK, BLOCK_CHUNK}; }
     return {(float)x*BLOCK_CHUNK, (float)y*BLOCK_CHUNK, BLOCK_CHUNK, BLOCK_CHUNK};
 }
 Rectangle getTileP(Vector2 pos, int type, int time){
-    if (type == 199){ return {(float)pos.x*22, (float)pos.y*22, BLOCK_CHUNK, BLOCK_CHUNK}; }
+    if (type == TREE_TRUNK || type == TREE_BRANCH){ return {(float)pos.x*22, (float)pos.y*22, BLOCK_CHUNK, BLOCK_CHUNK}; }
     if (type == (int)WORKBENCH) return {pos.x*22.0f, 0, 11, 20};
     
     if (isWaterTile(type))

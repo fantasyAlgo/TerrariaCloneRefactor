@@ -56,8 +56,7 @@ void loadChunk(unsigned char map[][MAP_HEIGHT], int current_chunk, ValueNoise1D 
             map[i][j-1] = 202+rand()%45;
             iFlowerPlace = i;
         }
-        if (!grassUpPlaced)
-            grassUpPlaced = true;
+        if (!grassUpPlaced) grassUpPlaced = true;
       } else if (j > yNoise && noise2DValue > 0.45){
         map[i][j] = DIRT;
         grassUpPlaced = true;

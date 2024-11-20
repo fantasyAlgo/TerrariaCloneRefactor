@@ -5,7 +5,9 @@
 #include <raymath.h>
 class Player {
 private:
-  bool isJumping;
+  float isJumping = -1;
+  bool whichDir;
+  float animationFrame;
   Vector2 force;
 public:
   Vector2 pos;
