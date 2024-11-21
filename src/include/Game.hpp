@@ -8,6 +8,9 @@
 class Game {
 private:
   Player player;
+  Vector2 mouse_tile;
+  Vector2 mouse_pos;
+
   ValueNoise1D noise; // 1d perlin noise (like yeah...)
   PerlinNoise noise2d; // 2d perlin noise (like yeah.)
   unsigned char map[MAP_WIDTH][MAP_HEIGHT]; // terraria map
@@ -18,4 +21,5 @@ public:
   void update(float deltaTime);
   void inputHandler(float deltaTime);
   void render();
+  void renderTile(int i, int j, int xTile, int yTile);
 };

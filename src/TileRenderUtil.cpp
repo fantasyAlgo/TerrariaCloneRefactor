@@ -95,11 +95,12 @@ Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type,
   if (type == TREE_TRUNK){
     if (map[i][j-3] == 201)
       return {0, 0};
-    return {0, noise1d.eval((i+j)/25)*5};
+    return {0,0};// noise1d.eval((i+j)/25)*5};
   }else if (type == TREE_BRANCH){
     if (map[i-1][j] == TREE_TRUNK)
-      return {4, 3+noise1d.eval((i+j)/25)*3};
-    return {4, noise1d.eval((i+j)/25)*3};
+      return {4, 3};
+    //return {4, noise1d.eval((i+j)/25)*3};
+    return {3, 0};
   }
   return {0,0};
 }

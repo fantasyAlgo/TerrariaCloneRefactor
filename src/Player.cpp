@@ -51,14 +51,15 @@ void Player::render(){
                  {0,0}, 0, WHITE);
 }
 void Player::inputHandler(float deltaTime){
-  if (IsKeyDown(KEY_RIGHT)) this->force.x = deltaTime*PLAYER_SPEED;//this->pos.x += deltaTime*PLAYER_SPEED;
-  if (IsKeyDown(KEY_LEFT)) this->force.x = -deltaTime*PLAYER_SPEED;//this->pos.x -= deltaTime* PLAYER_SPEED;
+  if (IsKeyDown(KEY_D)) this->force.x = deltaTime*PLAYER_SPEED;//this->pos.x += deltaTime*PLAYER_SPEED;
+  if (IsKeyDown(KEY_A)) this->force.x = -deltaTime*PLAYER_SPEED;//this->pos.x -= deltaTime* PLAYER_SPEED;
   if (IsKeyDown(KEY_SPACE) && isJumping == -1){
     this->force.y = -30;
     this->isJumping = 0.0;//this->pos.y -= deltaTime*   PLAYER_SPEED;
   }
-  if (IsKeyDown(KEY_W)) this->force.y = -100;
-  if (IsKeyDown(KEY_S)) this->force.y = 100;
+
+  if (IsKeyDown(KEY_UP)) this->force.y = -100;
+  if (IsKeyDown(KEY_DOWN)) this->force.y = 100;
 }
 
 Vector2 Player::getPos(){

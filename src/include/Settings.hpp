@@ -1,9 +1,9 @@
 #pragma once
 
-constexpr int SCREEN_WIDTH = 1920.0f;//*(0.75f);
-constexpr int SCREEN_HEIGHT = 1080.0f;//*(0.75f);
-constexpr int BLOCK_SIZE_X = 25;
-constexpr int BLOCK_SIZE_Y = 25;
+constexpr int SCREEN_WIDTH = 1600;//1920.0f *(0.75f);
+constexpr int SCREEN_HEIGHT = 1000;//1080.0f *(0.75f);
+constexpr int BLOCK_SIZE_X = 19;
+constexpr int BLOCK_SIZE_Y = 19;
 constexpr float BLOCK_SCREEN_RATIO_X = (float)SCREEN_WIDTH/(float)BLOCK_SIZE_X;
 constexpr float BLOCK_SCREEN_RATIO_Y = (float)SCREEN_HEIGHT/(float)BLOCK_SIZE_Y;
 

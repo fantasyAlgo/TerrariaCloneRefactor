@@ -39,7 +39,7 @@ void loadChunk(unsigned char map[][MAP_HEIGHT], int current_chunk, ValueNoise1D 
     flowerProb = (i - iFlowerPlace > 2) ? rand() % 100 : 0;
     treeProb = ((i - iTreePlace) > 4) ? rand() % 100 : 0;
     for (int j = 0; j < MAP_HEIGHT; j++){
-      map[i][j] = 0;
+      //map[i][j] = 0;
       noise2DValue = (1+noise2D.eval({((float)i)/25, ((float)j)/25, 1.0}))/2;
       ore2Dnoise = (1+noise2D.eval({((float)i)/50, ((float)j)/50, 53.0}))/2;
       waterNoise = (1+noise2D.eval({((float)i)/50, ((float)j)/50, 2.0}))/2;
