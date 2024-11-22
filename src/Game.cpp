@@ -7,6 +7,7 @@
 #include "include/TileRenderUtil.hpp"
 
 #include <cmath>
+#include <future>
 #include <iostream>
 #include <ostream>
 #include <raylib.h>
@@ -22,6 +23,7 @@ void Game::init(){
   isChunkLoaded[(int)this->player.getPos().x/CHUNK_SIZE ] = true;
   //std::cout << "ll: " << this->player.getPos().x/CHUNK_SIZE << std::endl;
   ChunkLoader::loadChunk(this->map, this->player.getPos().x/CHUNK_SIZE , this->noise, this->noise2d);
+  this->light_thread = std::async(std::launch::async, &LightHandler::run, &lightHandler, std::ref(this->player), this->map);
 }
 
 void Game::update(float deltaTime){
@@ -31,11 +33,14 @@ void Game::update(float deltaTime){
 }
 void Game::inputHandler(float deltaTime){
   this->player.inputHandler(deltaTime);
-  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+  if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
     map[(int)mouse_tile.x][(int)mouse_tile.y] = STONE;
-  }
+  if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+    map[(int)mouse_tile.x][(int)mouse_tile.y] = 0;
+
 }
 void Game::render(){
+  lightHandler.askForUpdate();
   DrawTexturePro(Textures::backgroundForest, {0,0, 1024, 838}, {0,0, SCREEN_WIDTH, SCREEN_HEIGHT}, {0,0}, 0, WHITE);
   Vector2 starting_point = {(floor(this->player.getPos().x) - this->player.getPos().x)*BLOCK_SIZE_X, 
                             (floor(this->player.getPos().y) - this->player.getPos().y)*BLOCK_SIZE_Y};
@@ -51,11 +56,10 @@ void Game::render(){
     yTile = floor(this->player.getPos().y)-((float)SCREEN_HEIGHT/(float)BLOCK_SIZE_Y)/2-2;
     for (int j = starting_point.y-BLOCK_SIZE_Y; j < SCREEN_HEIGHT; j+=BLOCK_SIZE_Y){
       yTile++;
-      if (xTile == (int)mouse_tile.x && yTile == (int)mouse_tile.y){
+      this->renderTile(i, j, xTile, yTile, starting_point);
+      if (xTile == (int)mouse_tile.x && yTile == (int)mouse_tile.y)
         DrawRectangle(i, j, BLOCK_SIZE_X, BLOCK_SIZE_Y, {0, 0, 0, 125});
-        continue;
-      }
-      this->renderTile(i, j, xTile, yTile);
+
     }
     xTile++;
   }
@@ -63,7 +67,7 @@ void Game::render(){
 }
 
 
-void Game::renderTile(int i, int j, int xTile, int yTile){
+void Game::renderTile(int i, int j, int xTile, int yTile, Vector2 starting_point){
   Vector2 tileAmbient;
   Rectangle tileRect;
   if (map[xTile][yTile] != 0 && map[xTile][yTile] < TREE_BRANCH){
@@ -71,18 +75,24 @@ void Game::renderTile(int i, int j, int xTile, int yTile){
     tileRect.x += Textures::tileAtlas[map[xTile][yTile]]; // Add the atlas position
     DrawTexturePro(Textures::all_atlas, 
                    tileRect,
-                   {(float)i, (float)j, BLOCK_SIZE_X, BLOCK_SIZE_Y}, {0,0}, 0, map[xTile][yTile] == WALL_DIRT ? GRAY : WHITE);
-  }else if (map[xTile][yTile] >= TREE_BRANCH){
+                   {(float)i, (float)j, BLOCK_SIZE_X+1, BLOCK_SIZE_Y+1}, {0,0}, 0, 
+                   lightHandler.getLightValue((i-starting_point.x)/BLOCK_SIZE_X, (j-starting_point.y)/BLOCK_SIZE_Y, map[xTile][yTile]));
+  }else if (map[xTile][yTile] >= TREE_BRANCH && map[xTile][yTile] != TREE_TOP){
     if (map[xTile][yTile] >= 202){
       tileRect = TileRenderUtil::getTile(map[xTile][yTile]-202, 0);
       tileRect.x += Textures::flowersAtlas; // Add the atlas position
-    }else {
+    }else{
       tileRect = TileRenderUtil::getTileP(TileRenderUtil::treeAmbientTile(map, xTile, yTile, map[xTile][yTile], this->noise), map[xTile][yTile]);
-      tileRect.x += Textures::treeAtlas; // Add the atlas position
+      tileRect.x += Textures::tileAtlas[map[xTile][yTile]]; // Add the atlas position
     }
     DrawTexturePro(Textures::all_atlas, 
                    tileRect,
                    {(float)i, (float)j, BLOCK_SIZE_X, BLOCK_SIZE_Y+1}, {0,0}, 0, map[xTile][yTile] == WALL_DIRT ? GRAY : WHITE);
+
+  }else if (map[xTile][yTile] != 0){
+    DrawTexturePro(Textures::all_atlas, 
+                   {(float)Textures::topTreeAtlas, 0, 82, 82},
+                   {(float)i- BLOCK_SIZE_X*1.9f, (float)j-BLOCK_SIZE_Y*1.9f, BLOCK_SIZE_X*5, BLOCK_SIZE_Y*5}, {0,0}, 0, WHITE);
 
   }
 
@@ -90,5 +100,8 @@ void Game::renderTile(int i, int j, int xTile, int yTile){
 }
 
 
-
+Game::~Game(){
+  std::cout << "I'm killing you" << std::endl;
+  this->lightHandler.kill();
+}
 

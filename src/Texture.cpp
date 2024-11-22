@@ -21,6 +21,7 @@ int flowersAtlas;
 int torchAtlas;
 int woodAtlas;
 int waterAtlas;
+int topTreeAtlas;
 
 int playerAtlasPos;
 void load(){
@@ -36,6 +37,8 @@ void load(){
   torchAtlas = woodAtlas + 288;
   treeAtlas = torchAtlas + 132;
   oreAtlas = 4126-48-288;
+  topTreeAtlas = oreAtlas + 288;
+  waterAtlas = topTreeAtlas + 246;
 
   grassAtlas = 0;
   playerAtlasPos = 326;
@@ -47,9 +50,9 @@ void load(){
   tileAtlas[WALL_DIRT] = grassAtlas;
 
   tileAtlas[SOURCE_WATER] = woodAtlas;
-  tileAtlas[WATER_RIGHT] = woodAtlas;
-  tileAtlas[WATER_LEFT] = woodAtlas;
-  tileAtlas[WATER_DOWN] = woodAtlas;
+  tileAtlas[WATER_RIGHT] = waterAtlas;
+  tileAtlas[WATER_LEFT] = waterAtlas;
+  tileAtlas[WATER_DOWN] = waterAtlas;
 
   tileAtlas[TORCH] = terrainAtlas;
   tileAtlas[WOOD] = woodAtlas;
@@ -57,7 +60,7 @@ void load(){
 
   tileAtlas[TREE_TRUNK] = treeAtlas;
   tileAtlas[TREE_BRANCH] = treeAtlas;
-  tileAtlas[TREE_TOP] = treeAtlas;
+  tileAtlas[TREE_TOP] = topTreeAtlas;
 
 
 }

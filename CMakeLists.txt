@@ -28,6 +28,7 @@ add_executable(raylib_project
   src/Texture.cpp
   src/ChunkLoader.cpp
   src/TileRenderUtil.cpp
+  src/LightHandler.cpp
 )
 target_link_libraries(raylib_project raylib)
 

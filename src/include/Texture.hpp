@@ -16,6 +16,7 @@ extern int treeAtlas;
 extern int flowersAtlas;
 extern int torchAtlas;
 extern int woodAtlas;
+extern int topTreeAtlas;
 
 extern int playerAtlasPos;
 
