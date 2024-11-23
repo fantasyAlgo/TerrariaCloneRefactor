@@ -11,7 +11,7 @@
 
 LightHandler::LightHandler()  : isRunning(false), needsUpdate(false){
   for (int i = 0; i < BLOCK_SCREEN_RATIO_X+1; i++)  
-    for (int j = 0; j < BLOCK_SCREEN_RATIO_Y+1; j++) 
+    for (int j = 0; j < BLOCK_SCREEN_RATIO_Y+2; j++) 
       light_map[i][j] = 255;
 }
 bool LightHandler::run(const Player &player, unsigned char map[MAP_WIDTH][MAP_HEIGHT]){
@@ -40,12 +40,13 @@ void LightHandler::update(Vector2 start_tile, unsigned char map[MAP_WIDTH][MAP_H
     light_value = 255;
     highest_empty = -1;
     for (int j = 0; j < MAP_HEIGHT; j++) {
-      if (!TileRenderUtil::isCollisionTileHelper(map, start_tile.x + i, j, map[(int)start_tile.x + i][j])){
+      unsigned char map_tile = map[(int)start_tile.x + i][j];
+      if (map_tile != WALL_DIRT && !TileRenderUtil::isCollisionTileHelper(map, start_tile.x + i, j, map_tile)){
         highest_empty = highest_empty == -1 ? j : highest_empty;
-        light_value -= 30;
-      }else if (highest_empty != -1) light_value -= 5;
+        light_value -= 50;
+      }else if (highest_empty != -1) light_value -= 10;
       light_value = std::max(0, light_value);
-      if (j-start_tile.y >= 0 && j-start_tile.y <= BLOCK_SCREEN_RATIO_Y)
+      if (j-start_tile.y >= 0 && j-start_tile.y <= BLOCK_SCREEN_RATIO_Y+1)
         this->light_map[i][j-(int)start_tile.y] = light_value;
     }
   }

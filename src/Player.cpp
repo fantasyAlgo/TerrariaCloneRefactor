@@ -1,7 +1,9 @@
 #include "include/Player.hpp"
+#include "include/Blocks.h"
 #include "include/Settings.hpp"
 #include "include/Texture.hpp"
 #include "include/TileRenderUtil.hpp"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <raylib.h>
@@ -9,6 +11,7 @@
 
 Player::Player(){
   this->pos = {400, 250};
+  selected_item = 0;
 }
 void Player::update(unsigned char map[][MAP_HEIGHT], float deltaTime){
   if (this->force.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
@@ -65,10 +68,16 @@ void Player::inputHandler(float deltaTime){
   if (IsKeyDown(KEY_DOWN)) this->force.y = 100;
   if (IsKeyDown(KEY_LEFT)) this->force.x = -0.5f;
   if (IsKeyDown(KEY_RIGHT)) this->force.x = 0.5f;
-
+  float wheelMove = GetMouseWheelMove();
+  //std::cout << selected_item << " " << wheelMove << std::endl;
+  if (wheelMove > 0) selected_item = std::min(N_INVENTORY_COLUMNS-1, selected_item+1);
+  if (wheelMove < 0) selected_item = std::max(0, selected_item-1);
 }
 
 Vector2 Player::getPos(){
   return this->pos;
+}
+PlayerItem Player::getInventoryItem(int i, int j){
+  return inventory[i][j];
 }
 

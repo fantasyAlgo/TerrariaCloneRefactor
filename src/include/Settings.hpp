@@ -21,6 +21,10 @@ constexpr int CHUNK_SIZE = 48;
 constexpr int NOISE_VARIABILITY = 40;
 
 
+constexpr int N_INVENTORY_ROWS  = 5;
+constexpr int N_INVENTORY_COLUMNS  = 9;
+
+
 constexpr bool offset_block_x = SCREEN_WIDTH%BLOCK_SIZE_X != 0;
 constexpr bool offset_block_y = SCREEN_HEIGHT%BLOCK_SIZE_Y == 0;
 

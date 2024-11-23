@@ -3,6 +3,7 @@
 #include <memory>
 #include <raylib.h>
 #include <vector>
+
 enum BlockType{
     EMPTY,
     DIRT,
@@ -250,12 +251,12 @@ struct ArmorItem {
 };
 
 struct InventoryBlock {
+    GeneralType generalType;
     BlockType id;
     unsigned short iconId;
     bool puttable;
     ToolType toolId;
-    std::shared_ptr<Texture2D> texture;
-	GeneralType generalType;
+    int texture;
     int craftable;
     std::vector<PlayerItem> recipe;
 };

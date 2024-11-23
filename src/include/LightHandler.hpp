@@ -9,7 +9,7 @@
 
 class LightHandler {
 private:
-  unsigned char light_map[(int)BLOCK_SCREEN_RATIO_X + 2][(int)BLOCK_SCREEN_RATIO_Y + 2];
+  unsigned char light_map[(int)BLOCK_SCREEN_RATIO_X + 2][(int)BLOCK_SCREEN_RATIO_Y + 3];
   std::atomic<bool> isRunning;
   std::atomic<bool> needsUpdate;
   std::atomic<bool> isUpdating;
