@@ -10,7 +10,7 @@
 
 class LightHandler {
 private:
-  unsigned char light_map[(int)BLOCK_SCREEN_RATIO_X + 3][(int)BLOCK_SCREEN_RATIO_Y + 3];
+  unsigned char light_map[1000][1000];
   std::atomic<bool> isRunning;
   std::atomic<bool> needsUpdate;
   std::atomic<bool> isUpdating;
@@ -18,8 +18,8 @@ private:
 public:
   std::vector<Vector2> torches;
   LightHandler();
-  bool run(const Player &player, unsigned char map[MAP_WIDTH][MAP_HEIGHT]);
-  void update(Vector2 start_tile, unsigned char map[MAP_WIDTH][MAP_HEIGHT]);
+  bool run(const Player &player, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT]);
+  void update(Vector2 start_tile, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT]);
 
   Color getLightValue(int tileX, int tileY, unsigned char type);
   void askForUpdate();

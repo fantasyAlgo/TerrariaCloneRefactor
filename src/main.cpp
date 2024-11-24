@@ -6,22 +6,23 @@
 
 
 int main(void){
-  //init_settings();
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "my new terraria clone");
+  settings::init_settings();
+  InitWindow(settings::SCREEN_WIDTH, settings::SCREEN_HEIGHT, "my new terraria clone");
+  SetExitKey(0);
   rlImGuiSetup(true);
   Game game;
   float deltaTime;
   bool showDemoWindow = true;
   float sliderValue = 0;
   //SetTargetFPS(60);
-  while (game.getIsRunning() && !WindowShouldClose()){ 
+  while (game.getIsRunning()){ 
     deltaTime = GetFrameTime();
     game.inputHandler(deltaTime);
     game.update(deltaTime);
     BeginDrawing();
       ClearBackground({126, 197, 222, 255});
       game.render();
-      DrawFPS(SCREEN_WIDTH-50, 10);
+      DrawFPS(settings::SCREEN_WIDTH-50, 10);
       rlImGuiBegin();
         game.renderUI();
       rlImGuiEnd();

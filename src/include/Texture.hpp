@@ -8,6 +8,7 @@ extern Texture2D item_entities_atlas;
 
 extern Texture2D backgroundForest;
 extern Texture2D logoImage;
+extern Texture2D logoImageOptions;
 
 extern int terrainAtlas;
 extern int grassAtlas;

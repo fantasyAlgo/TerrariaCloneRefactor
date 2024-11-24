@@ -8,7 +8,7 @@
 
 namespace ChunkLoader {
 
-void makeTree(unsigned char map[][MAP_HEIGHT], int i, int j, int height){
+void makeTree(unsigned char map[][settings::MAP_HEIGHT], int i, int j, int height){
     int randV; 
     for (int k = 1; k < height; k++){
         map[i][j-k] = TREE_TRUNK;
@@ -19,8 +19,8 @@ void makeTree(unsigned char map[][MAP_HEIGHT], int i, int j, int height){
     map[i][j-height-2] = TREE_TOP;
 }
 
-void loadChunk(unsigned char map[][MAP_HEIGHT], int current_chunk, ValueNoise1D &noise, PerlinNoise &noise2D){
-  int start_chunk = current_chunk*CHUNK_SIZE;
+void loadChunk(unsigned char map[][settings::MAP_HEIGHT], int current_chunk, ValueNoise1D &noise, PerlinNoise &noise2D){
+  int start_chunk = current_chunk*settings::CHUNK_SIZE;
   float yNoise;
   float noise2DValue;
   float ore2Dnoise;
@@ -32,13 +32,13 @@ void loadChunk(unsigned char map[][MAP_HEIGHT], int current_chunk, ValueNoise1D 
 
   float flowerProb;
   int iFlowerPlace = -50;
-  for (int i = start_chunk; i < start_chunk+CHUNK_SIZE; i++){
-    yNoise = ((int)(MAP_HEIGHT/2) - (noise.eval(((float)i)/NOISE_VARIABILITY))*MAP_HEIGHT/4);
+  for (int i = start_chunk; i < start_chunk+settings::CHUNK_SIZE; i++){
+    yNoise = ((int)(settings::MAP_HEIGHT/2) - (noise.eval(((float)i)/settings::NOISE_VARIABILITY))*settings::MAP_HEIGHT/4);
     grassUpPlaced = false;
     depthHollow = 0;
     flowerProb = (i - iFlowerPlace > 2) ? rand() % 100 : 0;
     treeProb = ((i - iTreePlace) > 4) ? rand() % 100 : 0;
-    for (int j = 0; j < MAP_HEIGHT; j++){
+    for (int j = 0; j < settings::MAP_HEIGHT; j++){
       //map[i][j] = 0;
       noise2DValue = (1+noise2D.eval({((float)i)/25, ((float)j)/25, 1.0}))/2;
       ore2Dnoise = (1+noise2D.eval({((float)i)/50, ((float)j)/50, 53.0}))/2;
@@ -81,7 +81,7 @@ void loadChunk(unsigned char map[][MAP_HEIGHT], int current_chunk, ValueNoise1D 
 
 }
 
-void loadNearbyChunks(std::unordered_map<int, bool> &isChunkLoaded, unsigned char map[][MAP_HEIGHT], int current_chunk, ValueNoise1D &noise, PerlinNoise &noise2D){
+void loadNearbyChunks(std::unordered_map<int, bool> &isChunkLoaded, unsigned char map[][settings::MAP_HEIGHT], int current_chunk, ValueNoise1D &noise, PerlinNoise &noise2D){
   if (isChunkLoaded.find(current_chunk+1) == isChunkLoaded.end()){
     isChunkLoaded[current_chunk+1] = true;
     ChunkLoader::loadChunk(map, current_chunk+1, noise, noise2D);

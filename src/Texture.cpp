@@ -10,6 +10,7 @@ Texture2D item_entities_atlas;
 // Various images
 Texture2D backgroundForest;
 Texture2D logoImage;
+Texture2D logoImageOptions;
 
 
 
@@ -33,6 +34,7 @@ void load(){
   item_entities_atlas = LoadTexture("src/Assets/item_entity_atlas.png");
   backgroundForest = LoadTexture("src/Assets/Forest_background_7.png");
   logoImage = LoadTexture("src/Assets/NewPromoLogo.png");
+  logoImageOptions = LoadTexture("src/Assets/optionsLogo.png");
 
   grassAtlas = 0;
   stoneAtlas = 288;

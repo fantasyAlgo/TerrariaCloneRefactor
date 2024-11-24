@@ -1,16 +1,22 @@
 #pragma once
 
-constexpr int SCREEN_WIDTH = 1920.0f; //*(0.75f);
-constexpr int SCREEN_HEIGHT = 1080.0f; //*(0.75f);
-constexpr int BLOCK_SIZE_X = 20;
-constexpr int BLOCK_SIZE_Y = 20;
-constexpr float BLOCK_SCREEN_RATIO_X = (float)SCREEN_WIDTH/(float)BLOCK_SIZE_X;
-constexpr float BLOCK_SCREEN_RATIO_Y = (float)SCREEN_HEIGHT/(float)BLOCK_SIZE_Y;
 
-constexpr float PLAYER_SPEED = 10;
+namespace settings {
+
+extern int SCREEN_WIDTH;
+extern int SCREEN_HEIGHT;
+extern int BLOCK_SIZE_X;
+extern int BLOCK_SIZE_Y;
+
+extern float BLOCK_SCREEN_RATIO_X;
+extern float BLOCK_SCREEN_RATIO_Y;
+extern bool offset_block_x;
+extern bool offset_block_y;
+
+extern float PLAYER_SPEED;
+
 constexpr int BLOCK_CHUNK = 18;
 constexpr int LIGHT_PASSES = 4;
-
 
 constexpr int MAXINT = 2147483647;
 constexpr int CAMERA_BLOCKS = 58;
@@ -20,12 +26,12 @@ constexpr int MAP_HEIGHT = 640;
 constexpr int CHUNK_SIZE = 48;
 constexpr int NOISE_VARIABILITY = 40;
 
-
 constexpr int N_INVENTORY_ROWS  = 5;
 constexpr int N_INVENTORY_COLUMNS  = 9;
 
+void init_settings();
+void setWindowSettings(int width, int height);
+void setBlockSettings(int block_x, int block_y);
+  
+}
 
-constexpr bool offset_block_x = SCREEN_WIDTH%BLOCK_SIZE_X != 0;
-constexpr bool offset_block_y = SCREEN_HEIGHT%BLOCK_SIZE_Y == 0;
-
-//void init_settings();

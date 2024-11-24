@@ -24,6 +24,7 @@ include_directories(include libs/)
 
 # Add executable and link Raylib
 add_executable(raylib_project 
+  src/settings.cpp
   src/main.cpp
   src/Game.cpp
   src/Player.cpp

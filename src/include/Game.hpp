@@ -10,6 +10,7 @@
 
 enum GameState {
   HOME,
+  OPTIONS,
   IN_GAME,
   MAIN_PAUSE,
 };
@@ -24,7 +25,7 @@ private:
 
   ValueNoise1D noise; // 1d perlin noise (like yeah...)
   PerlinNoise noise2d; // 2d perlin noise (like yeah.)
-  unsigned char map[MAP_WIDTH][MAP_HEIGHT]; // terraria map
+  unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT]; // terraria map
   std::future<bool> light_thread;
   LightHandler lightHandler;
   std::unordered_map<int, bool> isChunkLoaded; // i mean do i need to explain this?
@@ -39,6 +40,7 @@ public:
 
   void renderUI();
   void renderInGameUI();
+  void renderOptionsUI();
   void renderHomeGUI();
   void renderPauseGUI();
 
