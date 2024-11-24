@@ -14,7 +14,7 @@ int main(void){
   bool showDemoWindow = true;
   float sliderValue = 0;
   //SetTargetFPS(60);
-  while (!WindowShouldClose()){ 
+  while (game.getIsRunning() && !WindowShouldClose()){ 
     deltaTime = GetFrameTime();
     game.inputHandler(deltaTime);
     game.update(deltaTime);

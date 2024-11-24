@@ -9,7 +9,7 @@ constexpr float BLOCK_SCREEN_RATIO_Y = (float)SCREEN_HEIGHT/(float)BLOCK_SIZE_Y;
 
 constexpr float PLAYER_SPEED = 10;
 constexpr int BLOCK_CHUNK = 18;
-constexpr int LIGHT_PASSES = 10;
+constexpr int LIGHT_PASSES = 4;
 
 
 constexpr int MAXINT = 2147483647;

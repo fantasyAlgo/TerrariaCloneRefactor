@@ -14,7 +14,7 @@ private:
     {STONE, 1, EMPTY_TOOL, 10},
     {DIRT, 1, EMPTY_TOOL, 10},
     {COPPER_ORE, 1, EMPTY_TOOL, 10},
-    {EMPTY, 1, EMPTY_TOOL, 0},
+    {TORCH, 1, EMPTY_TOOL, 10},
     {EMPTY, 1, EMPTY_TOOL, 0},
     {EMPTY, 1, EMPTY_TOOL, 0},
     {EMPTY, 1, EMPTY_TOOL, 0},

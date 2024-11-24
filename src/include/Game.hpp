@@ -20,6 +20,7 @@ private:
   Vector2 mouse_tile;
   Vector2 mouse_pos;
   GameState state;
+  bool is_running;
 
   ValueNoise1D noise; // 1d perlin noise (like yeah...)
   PerlinNoise noise2d; // 2d perlin noise (like yeah.)
@@ -41,5 +42,7 @@ public:
   void renderHomeGUI();
   void renderPauseGUI();
 
-  void renderTile(int i, int j, int xTile, int yTile, Vector2 starting_point);
+  void renderTile(int i, int j, int xTile, int yTile, unsigned char type, Vector2 starting_point);
+
+  bool getIsRunning();
 };

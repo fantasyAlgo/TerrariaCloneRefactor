@@ -3,10 +3,14 @@
 #include <raylib.h>
 
 namespace Textures {
-
+// Atlases
 Texture2D all_atlas;
 Texture2D item_entities_atlas;
+
+// Various images
 Texture2D backgroundForest;
+Texture2D logoImage;
+
 
 
 int tileAtlas[255];
@@ -28,6 +32,7 @@ void load(){
   all_atlas = LoadTexture("src/Assets/spritesheet.png");
   item_entities_atlas = LoadTexture("src/Assets/item_entity_atlas.png");
   backgroundForest = LoadTexture("src/Assets/Forest_background_7.png");
+  logoImage = LoadTexture("src/Assets/NewPromoLogo.png");
 
   grassAtlas = 0;
   stoneAtlas = 288;
@@ -54,7 +59,7 @@ void load(){
   tileAtlas[WATER_LEFT] = waterAtlas;
   tileAtlas[WATER_DOWN] = waterAtlas;
 
-  tileAtlas[TORCH] = terrainAtlas;
+  tileAtlas[TORCH] = torchAtlas;
   tileAtlas[WOOD] = woodAtlas;
   tileAtlas[WORKBENCH] = woodAtlas;
 

@@ -13,6 +13,7 @@ Color addLightGreen(Color color, int value);
 Vector2 ambientBlock(unsigned char map[][MAP_HEIGHT], int i, int j, int type, ValueNoise1D  &noise1d);
 Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type, ValueNoise1D  &noise1d);
 
+bool isTileWall(int x, int y, ValueNoise1D noise);
 Rectangle getTile(int x, int y, int type = -1);
 Rectangle getTileP(Vector2 pos, int type = 0, int time = 1);
 Rectangle getTileWithSize(int x, int y, float size);

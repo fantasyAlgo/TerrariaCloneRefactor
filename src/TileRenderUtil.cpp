@@ -27,7 +27,7 @@ bool isCollisionTileHelper(unsigned char map[][MAP_HEIGHT], int i, int j, int ty
     if (i < 0 || j < 0 || i >= MAP_WIDTH || j >= MAP_HEIGHT)
         return true;
     if (type == WALL_DIRT) return map[i][j] == EMPTY;
-    return map[i][j] == 0 || (map[i][j] > TREE_TOP && map[i][j] < 254) || map[i][j] == WALL_DIRT || TileRenderUtil::isWater(map, i, j) 
+    return map[i][j] == TORCH || map[i][j] == 0 || (map[i][j] > TREE_TOP && map[i][j] < 254) || map[i][j] == WALL_DIRT || TileRenderUtil::isWater(map, i, j) 
             || map[i][j] == TREE_TRUNK || map[i][j] == TREE_BRANCH || map[i][j] == TREE_TOP || map[i][j] == WORKBENCH;
 }
 
@@ -105,12 +105,16 @@ Vector2 treeAmbientTile(unsigned char map[][MAP_HEIGHT], int i, int j, int type,
   return {0,0};
 }
 
+bool isTileWall(int x, int y, ValueNoise1D noise){
+  return y <= ((float)MAP_HEIGHT/2 - (noise.eval(((float)x)/NOISE_VARIABILITY))*MAP_HEIGHT/4)+10;
+}
 Rectangle getTile(int x, int y, int type){
     if (type == TREE_BRANCH || type == TREE_TRUNK){ return {(float)x*22, (float)y*BLOCK_CHUNK, BLOCK_CHUNK, BLOCK_CHUNK}; }
     return {(float)x*BLOCK_CHUNK, (float)y*BLOCK_CHUNK, BLOCK_CHUNK, BLOCK_CHUNK};
 }
 Rectangle getTileP(Vector2 pos, int type, int time){
-    if (type == TREE_TRUNK || type == TREE_BRANCH){ return {(float)pos.x*22, (float)pos.y*22, BLOCK_CHUNK, BLOCK_CHUNK}; }
+    if (type == TORCH) return {(float)pos.x*22, (float)pos.y*22, 22, 22}; 
+    if (type == TREE_TRUNK || type == TREE_BRANCH) return {(float)pos.x*22, (float)pos.y*22, BLOCK_CHUNK, BLOCK_CHUNK}; 
     if (type == (int)WORKBENCH) return {pos.x*22.0f, 0, 11, 20};
     
     if (isWaterTile(type))

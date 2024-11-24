@@ -5,7 +5,9 @@ namespace Textures {
 
 extern Texture2D all_atlas;
 extern Texture2D item_entities_atlas;
+
 extern Texture2D backgroundForest;
+extern Texture2D logoImage;
 
 extern int terrainAtlas;
 extern int grassAtlas;
