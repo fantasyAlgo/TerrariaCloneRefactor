@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <unordered_map>
 
+
 namespace ChunkLoader {
 
 void makeTree(unsigned char map[][settings::MAP_HEIGHT], int i, int j, int height){

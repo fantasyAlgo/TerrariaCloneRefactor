@@ -15,9 +15,7 @@ Player::Player(){
   for (int i = 0; i < settings::N_INVENTORY_ROWS; i++) 
     for (int j = 0; j < settings::N_INVENTORY_COLUMNS+1; j++) 
       inventory[i][j] = {EMPTY, 1, EMPTY_TOOL, 0};
-  inventory[0][1] = {STONE, 1, EMPTY_TOOL, 10};
-  inventory[1][0] = {DIRT, 1, EMPTY_TOOL, 10};
-  inventory[2][0] = {TORCH, 1, EMPTY_TOOL, 10};
+  inventory[settings::N_INVENTORY_ROWS-1][settings::N_INVENTORY_COLUMNS-1] = {TORCH, 1, EMPTY_TOOL, 10};
 }
 void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
   if (this->force.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
@@ -46,7 +44,7 @@ void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
   this->force.y += deltaTime*100;
   this->force.x *= 0.8;
 }
-void Player::render(){
+void Player::render(Color player_light){
   //std::cout << "offsets: " << (int)offset_block_x << " " << (int)offset_block_y << std::endl;
   int mid_pos_x = (settings::SCREEN_WIDTH/(2*settings::BLOCK_SIZE_X))*settings::BLOCK_SIZE_X + (int)settings::offset_block_x*settings::BLOCK_SIZE_X;
   int mid_pos_y = (settings::SCREEN_HEIGHT/(2*settings::BLOCK_SIZE_Y))*settings::BLOCK_SIZE_Y - (int)settings::offset_block_y*settings::BLOCK_SIZE_Y;
@@ -61,7 +59,7 @@ void Player::render(){
                  player_frame,
                  {(float)mid_pos_x - (float)settings::BLOCK_SIZE_X*0.25f, (float)mid_pos_y - (float)settings::BLOCK_SIZE_Y*0.25f, 
                  1.5f*(float)settings::BLOCK_SIZE_X, 2.5f*(float)settings::BLOCK_SIZE_Y}, 
-                 {0,0}, 0, WHITE);
+                 {0,0}, 0, player_light);
 }
 void Player::inputHandler(float deltaTime){
   if (IsKeyDown(KEY_D)) this->force.x = deltaTime*settings::PLAYER_SPEED;//this->pos.x += deltaTime*PLAYER_SPEED;
@@ -82,10 +80,41 @@ void Player::inputHandler(float deltaTime){
   if (wheelMove < 0) selected_item = std::max(0, selected_item-1);
 }
 
+void Player::addBlockToInventory(BlockType id){
+  if (id == EMPTY || id == WALL_DIRT) return;
+  int firstEmpty[2] = {-1, -1};
+  for (int i = 0; i < settings::N_INVENTORY_ROWS; i++) {
+    for (int j = 0; j < settings::N_INVENTORY_COLUMNS; j++) {
+      if (firstEmpty[0] == -1 && this->inventory[i][j].id == EMPTY && this->inventory[i][j].toolId == EMPTY_TOOL){
+        firstEmpty[0] = i;
+        firstEmpty[1] = j;
+      }
+      if (this->inventory[i][j].id == id){
+        this->inventory[i][j].amount += 1;
+        return;
+      }
+    }
+  }
+  this->inventory[firstEmpty[0]][firstEmpty[1]] = {id, 1, EMPTY_TOOL, 1};
+}
+void Player::reduceSelectedBlock(){
+  this->inventory[0][this->selected_item].amount -= 1;
+  if (this->inventory[0][this->selected_item].amount <= 0) this->inventory[0][this->selected_item] = {EMPTY, 0, EMPTY_TOOL, 0};
+}
+
+void Player::swapShowInventory(Vector2 ps1, Vector2 ps2){
+  auto tmp = this->inventory[(int)ps1.y][(int)ps1.x];
+  this->inventory[(int)ps1.y][(int)ps1.x] = this->inventory[(int)ps2.y][(int)ps2.x];
+  this->inventory[(int)ps2.y][(int)ps2.x] = tmp;
+
+}
+
 Vector2 Player::getPos(){
   return this->pos;
 }
-bool Player::getShowInventory(){ return this->isInventoryOpen;}
+bool Player::getShowInventory(){
+  return this->isInventoryOpen;
+}
 PlayerItem Player::getInventoryItem(int i, int j){
   return inventory[i][j];
 }

@@ -45,10 +45,17 @@ void Game::inputHandler(float deltaTime){
   }
   if (this->state != IN_GAME) return;
   this->player.inputHandler(deltaTime);
-  if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
-    map[(int)mouse_tile.x][(int)mouse_tile.y] = player.getInventoryItem(0, player.selected_item).id;
-  if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
-    map[(int)mouse_tile.x][(int)mouse_tile.y] = 0;
+  unsigned char mapTile = map[(int)mouse_tile.x][(int)mouse_tile.y];
+  if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)){
+    if ((mapTile == EMPTY || mapTile == WALL_DIRT) && player.getInventoryItem(0, player.selected_item).id != EMPTY){
+      map[(int)mouse_tile.x][(int)mouse_tile.y] = player.getInventoryItem(0, player.selected_item).id;
+      player.reduceSelectedBlock();
+    }
+  }
+  if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+    player.addBlockToInventory((BlockType)mapTile);
+    map[(int)mouse_tile.x][(int)mouse_tile.y] = !TileRenderUtil::isTileWall(mouse_tile.x, mouse_tile.y, noise) ? WALL_DIRT : EMPTY;
+  }
 
 }
 void Game::render(){
@@ -79,14 +86,14 @@ void Game::render(){
         this->renderTile(i, j, xTile, yTile, TORCH, starting_point);
       }else this->renderTile(i, j, xTile, yTile, map[xTile][yTile], starting_point);
       if (xTile == (int)mouse_tile.x && yTile == (int)mouse_tile.y){
-        std::cout << "tile light: " << (i-starting_point.x)/settings::BLOCK_SIZE_X << " " << (j-starting_point.y)/settings::BLOCK_SIZE_Y << 
-          "| light value: " << (int)lightHandler.getLightValue((i-starting_point.x)/settings::BLOCK_SIZE_X, (j-starting_point.y)/settings::BLOCK_SIZE_Y, STONE).r << std::endl;
+        //std::cout << "tile light: " << (i-starting_point.x)/settings::BLOCK_SIZE_X << " " << (j-starting_point.y)/settings::BLOCK_SIZE_Y << 
+        //  "| light value: " << (int)lightHandler.getLightValue((i-starting_point.x)/settings::BLOCK_SIZE_X, (j-starting_point.y)/settings::BLOCK_SIZE_Y, STONE).r << std::endl;
         DrawRectangle(i, j, settings::BLOCK_SIZE_X, settings::BLOCK_SIZE_Y, {0, 0, 0, 125});
       }
     }
     xTile++;
   }
-  this->player.render();
+  this->player.render(lightHandler.getLightValue(settings::BLOCK_SCREEN_RATIO_X/2, settings::BLOCK_SCREEN_RATIO_Y/2, STONE));
 }
 
 
@@ -119,7 +126,7 @@ void Game::renderInGameUI(){
   if (player.getShowInventory()){
     ImGui::ShowDemoWindow();  
   }
-  for (int j = 0; j < (player.getShowInventory() ? 3 : 1); j++) { 
+  for (int j = 0; j < (player.getShowInventory() ? settings::N_INVENTORY_ROWS : 1); j++) { 
     float rowY = vec.y + j * (slotSize.y + ImGui::GetStyle().ItemSpacing.y + 5.0f);
     ImGui::SetCursorScreenPos(ImVec2(vec.x, rowY));
     for (int i = 0; i < settings::N_INVENTORY_COLUMNS; i++) {
@@ -147,6 +154,30 @@ void Game::renderInGameUI(){
         // Pass the raylib Texture2D's OpenGL texture ID
         rlImGuiImageRect(&Textures::all_atlas, imageSize.x, imageSize.y, uv);
       }
+      ImGui::SetCursorScreenPos(slotPos);
+      ImGui::PushID(i * 100 + j);
+      ImGui::InvisibleButton("slot", {slotSize.x, slotSize.y});
+      //std::cout << "that is why thou shouldth doth thus!" << std::endl;
+      if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)){
+        player.slotIndices[0] = j;
+        player.slotIndices[1] = i;
+        ImGui::SetDragDropPayload("DND_DEMO_CELL", &player.slotIndices, sizeof(player.slotIndices));
+        ImGui::Text("Dragging slot (%d, %d)", j, i);
+        ImGui::EndDragDropSource();
+      }
+      if (ImGui::BeginDragDropTarget()){
+        //std::cout << "fair" << std::endl;
+        const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL");
+        if (payload != nullptr){
+          IM_ASSERT(payload->DataSize == sizeof(player.slotIndices));
+          int* payload_n = (int*) payload->Data;
+          std::cout << "bob: " << payload_n[0] << " " << payload_n[1] << std::endl;
+          player.swapShowInventory({payload_n[1], payload_n[0]}, {i,j});
+        }
+        ImGui::EndDragDropTarget();
+      }
+
+      ImGui::PopID();
       // Draw item count in the center of the slot if there are items
       if (player.getInventoryItem(j, i).amount > 0) {
         std::string countText = std::to_string(player.getInventoryItem(0, i).amount);
@@ -287,13 +318,13 @@ void Game::renderTile(int i, int j, int xTile, int yTile, unsigned char type, Ve
     }
     DrawTexturePro(Textures::all_atlas, 
                    tileRect,
-                   {(float)i, (float)j, (float)settings::BLOCK_SIZE_X, (float)settings::BLOCK_SIZE_Y+1}, {0,0}, 0, type == WALL_DIRT ? GRAY : WHITE);
+                   {(float)i, (float)j, (float)settings::BLOCK_SIZE_X*1.2f, (float)settings::BLOCK_SIZE_Y*1.2f+1}, {0,0}, 0, type == WALL_DIRT ? GRAY : WHITE);
 
   }else if (type != 0){
     DrawTexturePro(Textures::all_atlas, 
                    {(float)Textures::topTreeAtlas, 0, 82, 82},
-                   {(float)i- settings::BLOCK_SIZE_X*1.9f, (float)j-(float)settings::BLOCK_SIZE_Y*1.9f, 
-                   (float)settings::BLOCK_SIZE_X*5, (float)settings::BLOCK_SIZE_Y*5}, {0,0}, 0, WHITE);
+                   {(float)i- settings::BLOCK_SIZE_X*2.3f, (float)j-(float)settings::BLOCK_SIZE_Y*1.9f, 
+                   (float)settings::BLOCK_SIZE_X*6, (float)settings::BLOCK_SIZE_Y*5}, {0,0}, 0, WHITE);
 
   }
 

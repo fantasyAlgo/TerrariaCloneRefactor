@@ -26,7 +26,7 @@ constexpr int MAP_HEIGHT = 640;
 constexpr int CHUNK_SIZE = 48;
 constexpr int NOISE_VARIABILITY = 40;
 
-constexpr int N_INVENTORY_ROWS  = 5;
+constexpr int N_INVENTORY_ROWS  = 4;
 constexpr int N_INVENTORY_COLUMNS  = 9;
 
 void init_settings();

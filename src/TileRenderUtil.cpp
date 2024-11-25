@@ -114,7 +114,7 @@ Rectangle getTile(int x, int y, int type){
 }
 Rectangle getTileP(Vector2 pos, int type, int time){
     if (type == TORCH) return {(float)pos.x*22, (float)pos.y*22, 22, 22}; 
-    if (type == TREE_TRUNK || type == TREE_BRANCH) return {(float)pos.x*22, (float)pos.y*22, settings::BLOCK_CHUNK, settings::BLOCK_CHUNK}; 
+    if (type == TREE_TRUNK || type == TREE_BRANCH) return {(float)pos.x*22, (float)pos.y*22, settings::BLOCK_CHUNK, settings::BLOCK_CHUNK};
     if (type == (int)WORKBENCH) return {pos.x*22.0f, 0, 11, 20};
     
     if (isWaterTile(type))
