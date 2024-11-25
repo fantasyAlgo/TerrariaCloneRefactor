@@ -22,7 +22,7 @@ int main(void){
     BeginDrawing();
       ClearBackground({126, 197, 222, 255});
       game.render();
-      DrawFPS(settings::SCREEN_WIDTH-50, 10);
+      DrawFPS(settings::SCREEN_WIDTH-settings::SCREEN_WIDTH/16, 10);
       rlImGuiBegin();
         game.renderUI();
       rlImGuiEnd();

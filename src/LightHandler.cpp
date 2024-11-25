@@ -50,13 +50,14 @@ void LightHandler::update(Vector2 start_tile, unsigned char map[settings::MAP_WI
         light_value -= 80;
       }else if (highest_empty != -1) light_value -= 10;
       light_value = std::max(0, light_value);
-      if (j-start_tile.y >= 0 && j-start_tile.y <= settings::BLOCK_SCREEN_RATIO_Y+1)
+      if (j-(int)start_tile.y >= 0 && j-(int)start_tile.y <= settings::BLOCK_SCREEN_RATIO_Y+2)
         light_map_copy[i][j-(int)start_tile.y] = light_value;
       if (map_tile == TORCH)
         torch_sources.push_back({(float)i, (float)j});
 
     }
   }
+  //light_map_copy[0][0] = 0;
   int val;
   for (int i = 0; i < settings::BLOCK_SCREEN_RATIO_X+2; i++) {
     for (int j = 0; j < settings::BLOCK_SCREEN_RATIO_Y+3; j++) {

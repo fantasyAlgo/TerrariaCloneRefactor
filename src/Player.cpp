@@ -12,6 +12,12 @@
 Player::Player(){
   this->pos = {400, 250};
   selected_item = 0;
+  for (int i = 0; i < settings::N_INVENTORY_ROWS; i++) 
+    for (int j = 0; j < settings::N_INVENTORY_COLUMNS+1; j++) 
+      inventory[i][j] = {EMPTY, 1, EMPTY_TOOL, 0};
+  inventory[0][1] = {STONE, 1, EMPTY_TOOL, 10};
+  inventory[1][0] = {DIRT, 1, EMPTY_TOOL, 10};
+  inventory[2][0] = {TORCH, 1, EMPTY_TOOL, 10};
 }
 void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
   if (this->force.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
@@ -53,8 +59,8 @@ void Player::render(){
 
   DrawTexturePro(Textures::item_entities_atlas, 
                  player_frame,
-                 {(float)mid_pos_x - settings::BLOCK_SIZE_X*0.25f, (float)mid_pos_y - settings::BLOCK_SIZE_Y*0.25f, 
-                 1.5*settings::BLOCK_SIZE_X, 2.5*settings::BLOCK_SIZE_Y}, 
+                 {(float)mid_pos_x - (float)settings::BLOCK_SIZE_X*0.25f, (float)mid_pos_y - (float)settings::BLOCK_SIZE_Y*0.25f, 
+                 1.5f*(float)settings::BLOCK_SIZE_X, 2.5f*(float)settings::BLOCK_SIZE_Y}, 
                  {0,0}, 0, WHITE);
 }
 void Player::inputHandler(float deltaTime){
@@ -69,6 +75,7 @@ void Player::inputHandler(float deltaTime){
   if (IsKeyDown(KEY_DOWN)) this->force.y = 100;
   if (IsKeyDown(KEY_LEFT)) this->force.x = -0.5f;
   if (IsKeyDown(KEY_RIGHT)) this->force.x = 0.5f;
+  if (IsKeyPressed(KEY_E)) this->isInventoryOpen = !this->isInventoryOpen;
   float wheelMove = GetMouseWheelMove();
   //std::cout << selected_item << " " << wheelMove << std::endl;
   if (wheelMove > 0) selected_item = std::min(settings::N_INVENTORY_COLUMNS-1, selected_item+1);
@@ -78,6 +85,7 @@ void Player::inputHandler(float deltaTime){
 Vector2 Player::getPos(){
   return this->pos;
 }
+bool Player::getShowInventory(){ return this->isInventoryOpen;}
 PlayerItem Player::getInventoryItem(int i, int j){
   return inventory[i][j];
 }
