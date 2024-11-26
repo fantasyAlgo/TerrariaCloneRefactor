@@ -26,6 +26,9 @@ public:
 
   void inputHandler(float deltaTime);
 
+  // tool movement
+  void initAction();
+
   void addBlockToInventory(BlockType id);
   void reduceSelectedBlock();
 

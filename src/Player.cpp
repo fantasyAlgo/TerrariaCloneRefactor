@@ -47,13 +47,20 @@ void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
 
   this->force.y += deltaTime*100;
   this->force.x *= 0.8;
+
+  if (this->toolAnimation > -30)
+    this->toolAnimation += deltaTime*300.0f;
+  if (this->toolAnimation >= 90) this->toolAnimation = -30;
+
 }
 void Player::render(Color player_light){
   //std::cout << "offsets: " << (int)offset_block_x << " " << (int)offset_block_y << std::endl;
   int mid_pos_x = (settings::SCREEN_WIDTH/(2*settings::BLOCK_SIZE_X))*settings::BLOCK_SIZE_X + (int)settings::offset_block_x*settings::BLOCK_SIZE_X;
   int mid_pos_y = (settings::SCREEN_HEIGHT/(2*settings::BLOCK_SIZE_Y))*settings::BLOCK_SIZE_Y - (int)settings::offset_block_y*settings::BLOCK_SIZE_Y;
   Rectangle player_frame;
-  if (this->isJumping == -1 && (this->force.x < GetFrameTime()*settings::PLAYER_SPEED/2 && this->force.x > -GetFrameTime()*settings::PLAYER_SPEED/2))
+  if (this->toolAnimation > 30)
+    player_frame = {(float)Textures::playerAtlasPos + (int)(1+(((toolAnimation+30.0f)/120.0f)* 4.0f))*20, 0, (this->force.x > 0 ? -1.0f : 1.0f)*20.0f, 30};
+  else if (this->isJumping == -1 && (this->force.x < GetFrameTime()*settings::PLAYER_SPEED/2 && this->force.x > -GetFrameTime()*settings::PLAYER_SPEED/2))
     player_frame = {(float)Textures::playerAtlasPos, 0, (this->force.x > 0 ? -1.0f : 1.0f)*20.0f, 30};
   else if (this->isJumping == -1)
     player_frame = {(float)Textures::playerAtlasPos + (6+(int)this->animationFrame%6)*20, 0, (this->force.x > 0 ? -1.0f : 1.0f)*20.0f, 30};
@@ -71,12 +78,14 @@ void Player::renderTool(Color player_light){
   auto inventoryItem = this->inventory[0][this->selected_item];
   int mid_pos_x = (settings::SCREEN_WIDTH/(2*settings::BLOCK_SIZE_X))*settings::BLOCK_SIZE_X + (int)settings::offset_block_x*settings::BLOCK_SIZE_X;
   int mid_pos_y = (settings::SCREEN_HEIGHT/(2*settings::BLOCK_SIZE_Y))*settings::BLOCK_SIZE_Y - (int)settings::offset_block_y*settings::BLOCK_SIZE_Y;
-  Rectangle swordRect = {(float)Textures::toolAtlas[inventoryItem.toolId], 0, 31, 31};
-  this->toolAnimation++;
+  Rectangle swordRect = {(float)Textures::toolAtlas[inventoryItem.toolId], 0, (force.x > 0?1.0f:-1.0f)*31, 31};
+
   DrawTexturePro(Textures::item_entities_atlas,  swordRect,
-                 {(float)mid_pos_x + (float)settings::BLOCK_SIZE_X*0.25f, (float)mid_pos_y - (float)settings::BLOCK_SIZE_Y*0.25f, 
-                 1.5f*(float)settings::BLOCK_SIZE_X, 2.5f*(float)settings::BLOCK_SIZE_Y/2.0f}, 
-                 {0.5, 0.5}, this->toolAnimation, player_light);
+                 {(float)mid_pos_x + (float)settings::BLOCK_SIZE_X*(this->force.x > 0 ?0.8f : 0.0f), 
+                 (float)mid_pos_y + (float)settings::BLOCK_SIZE_Y*0.8f, 
+
+                 (float)settings::BLOCK_SIZE_X*1.2f, (float)settings::BLOCK_SIZE_Y*1.2f}, 
+                 {force.x>0.0f? 0.0f : settings::BLOCK_SIZE_X, (float)settings::BLOCK_SIZE_Y}, (force.x>0?1.0f:-1.0f)*this->toolAnimation, player_light);
 }
 
 
@@ -120,6 +129,10 @@ void Player::addBlockToInventory(BlockType id){
 void Player::reduceSelectedBlock(){
   this->inventory[0][this->selected_item].amount -= 1;
   if (this->inventory[0][this->selected_item].amount <= 0) this->inventory[0][this->selected_item] = {EMPTY, 0, EMPTY_TOOL, 0};
+}
+void Player::initAction(){
+  if (this->toolAnimation == -30)
+    this->toolAnimation = -29.99;
 }
 
 void Player::swapShowInventory(Vector2 ps1, Vector2 ps2){

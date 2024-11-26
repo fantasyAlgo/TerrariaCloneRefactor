@@ -53,6 +53,9 @@ void Game::inputHandler(float deltaTime){
     }
   }
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)){
+    if (player.getInventoryItem(0, player.selected_item).toolId != EMPTY_TOOL)
+      this->player.initAction();
+    if (player.getInventoryItem(0, player.selected_item).toolId == SWORD || player.getInventoryItem(0, player.selected_item).puttable) return;
     player.addBlockToInventory((BlockType)mapTile);
     map[(int)mouse_tile.x][(int)mouse_tile.y] = !TileRenderUtil::isTileWall(mouse_tile.x, mouse_tile.y, noise) ? WALL_DIRT : EMPTY;
   }
