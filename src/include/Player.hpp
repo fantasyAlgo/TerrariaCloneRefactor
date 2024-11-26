@@ -8,6 +8,7 @@
 class Player {
 private:
   float isJumping = -1;
+  float toolAnimation;
   bool whichDir;
   float animationFrame;
   Vector2 force;
@@ -21,10 +22,13 @@ public:
   Player();
   void update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime);
   void render(Color player_light);
+  void renderTool(Color player_light);
+
   void inputHandler(float deltaTime);
 
   void addBlockToInventory(BlockType id);
   void reduceSelectedBlock();
+
   void swapShowInventory(Vector2 ps1, Vector2 ps2);
   Vector2 getPos();
   bool getShowInventory();

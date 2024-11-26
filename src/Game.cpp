@@ -93,7 +93,9 @@ void Game::render(){
     }
     xTile++;
   }
-  this->player.render(lightHandler.getLightValue(settings::BLOCK_SCREEN_RATIO_X/2, settings::BLOCK_SCREEN_RATIO_Y/2, STONE));
+  Color player_color = lightHandler.getLightValue(settings::BLOCK_SCREEN_RATIO_X/2, settings::BLOCK_SCREEN_RATIO_Y/2, STONE);
+  this->player.render(player_color);
+  this->player.renderTool(player_color);
 }
 
 
@@ -130,6 +132,7 @@ void Game::renderInGameUI(){
     float rowY = vec.y + j * (slotSize.y + ImGui::GetStyle().ItemSpacing.y + 5.0f);
     ImGui::SetCursorScreenPos(ImVec2(vec.x, rowY));
     for (int i = 0; i < settings::N_INVENTORY_COLUMNS; i++) {
+      PlayerItem inventoryItem = player.getInventoryItem(j, i);
       //std::cout << i << " " << j << std::endl;
       ImVec2 slotPos = ImGui::GetCursorScreenPos();
       ImU32 slotColor = (i == player.selected_item && j == 0) ? IM_COL32(77, 128, 230, 255) : IM_COL32(50, 50, 50, 255);
@@ -137,12 +140,18 @@ void Game::renderInGameUI(){
       // Draw background for the slot
       ImGui::GetWindowDrawList()->AddRectFilled(slotPos, ImVec2(slotPos.x + slotSize.x, slotPos.y + slotSize.y), slotColor, 7);
       ImGui::SameLine();
-      if (player.getInventoryItem(j, i).id < LAST_BLOCK) {
+      if (inventoryItem.id < LAST_BLOCK) {
         // Get UV coordinates for the current block type
         Rectangle uv;
-        if (player.getInventoryItem(j, i).id == EMPTY)
+        if (inventoryItem.id == EMPTY && inventoryItem.toolId == EMPTY_TOOL)
           uv = {0, 1000, settings::BLOCK_CHUNK-1, settings::BLOCK_CHUNK-1};
-        else uv = {(float)Textures::tileAtlas[player.getInventoryItem(j, i).id], 0, settings::BLOCK_CHUNK-1, settings::BLOCK_CHUNK-1};
+        else {
+          if (inventoryItem.puttable)
+            uv = {(float)Textures::tileAtlas[inventoryItem.id], 0, settings::BLOCK_CHUNK-1, settings::BLOCK_CHUNK-1};
+          else {
+            uv = {(float)Textures::toolAtlas[inventoryItem.toolId], 0, 32, 32};
+          }
+        }
         // Compute position of the item image within the slot
         ImVec2 imagePos = ImVec2(
             slotPos.x + (slotSize.x - imageSize.x) * 0.5f,
@@ -152,7 +161,9 @@ void Game::renderInGameUI(){
         ImGui::SetCursorScreenPos(imagePos);
         // Use ImGui::Image to draw the texture with UV coordinates
         // Pass the raylib Texture2D's OpenGL texture ID
-        rlImGuiImageRect(&Textures::all_atlas, imageSize.x, imageSize.y, uv);
+        if (inventoryItem.puttable)
+          rlImGuiImageRect(&Textures::all_atlas, imageSize.x, imageSize.y, uv);
+        rlImGuiImageRect(&Textures::item_entities_atlas, imageSize.x, imageSize.y, uv);
       }
       ImGui::SetCursorScreenPos(slotPos);
       ImGui::PushID(i * 100 + j);
@@ -172,7 +183,7 @@ void Game::renderInGameUI(){
           IM_ASSERT(payload->DataSize == sizeof(player.slotIndices));
           int* payload_n = (int*) payload->Data;
           std::cout << "bob: " << payload_n[0] << " " << payload_n[1] << std::endl;
-          player.swapShowInventory({payload_n[1], payload_n[0]}, {i,j});
+          player.swapShowInventory({(float)payload_n[1], (float)payload_n[0]}, {(float)i,(float)j});
         }
         ImGui::EndDragDropTarget();
       }

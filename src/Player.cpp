@@ -12,10 +12,14 @@
 Player::Player(){
   this->pos = {400, 250};
   selected_item = 0;
+  this->toolAnimation = 0;
   for (int i = 0; i < settings::N_INVENTORY_ROWS; i++) 
     for (int j = 0; j < settings::N_INVENTORY_COLUMNS+1; j++) 
       inventory[i][j] = {EMPTY, 1, EMPTY_TOOL, 0};
   inventory[settings::N_INVENTORY_ROWS-1][settings::N_INVENTORY_COLUMNS-1] = {TORCH, 1, EMPTY_TOOL, 10};
+  inventory[0][0] = {EMPTY, 0, SWORD, 1};
+  inventory[0][1] = {EMPTY, 0, PICKAXE, 1};
+  inventory[0][2] = {EMPTY, 0, AXE, 1};
 }
 void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
   if (this->force.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
@@ -61,6 +65,22 @@ void Player::render(Color player_light){
                  1.5f*(float)settings::BLOCK_SIZE_X, 2.5f*(float)settings::BLOCK_SIZE_Y}, 
                  {0,0}, 0, player_light);
 }
+
+void Player::renderTool(Color player_light){
+  if (this->inventory[0][this->selected_item].puttable) return;
+  auto inventoryItem = this->inventory[0][this->selected_item];
+  int mid_pos_x = (settings::SCREEN_WIDTH/(2*settings::BLOCK_SIZE_X))*settings::BLOCK_SIZE_X + (int)settings::offset_block_x*settings::BLOCK_SIZE_X;
+  int mid_pos_y = (settings::SCREEN_HEIGHT/(2*settings::BLOCK_SIZE_Y))*settings::BLOCK_SIZE_Y - (int)settings::offset_block_y*settings::BLOCK_SIZE_Y;
+  Rectangle swordRect = {(float)Textures::toolAtlas[inventoryItem.toolId], 0, 31, 31};
+  this->toolAnimation++;
+  DrawTexturePro(Textures::item_entities_atlas,  swordRect,
+                 {(float)mid_pos_x + (float)settings::BLOCK_SIZE_X*0.25f, (float)mid_pos_y - (float)settings::BLOCK_SIZE_Y*0.25f, 
+                 1.5f*(float)settings::BLOCK_SIZE_X, 2.5f*(float)settings::BLOCK_SIZE_Y/2.0f}, 
+                 {0.5, 0.5}, this->toolAnimation, player_light);
+}
+
+
+
 void Player::inputHandler(float deltaTime){
   if (IsKeyDown(KEY_D)) this->force.x = deltaTime*settings::PLAYER_SPEED;//this->pos.x += deltaTime*PLAYER_SPEED;
   if (IsKeyDown(KEY_A)) this->force.x = -deltaTime*settings::PLAYER_SPEED;//this->pos.x -= deltaTime* PLAYER_SPEED;

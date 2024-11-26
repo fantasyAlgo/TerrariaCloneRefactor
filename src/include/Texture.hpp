@@ -24,6 +24,7 @@ extern int topTreeAtlas;
 extern int playerAtlasPos;
 
 extern int tileAtlas[255];
+extern int toolAtlas[255];
 
 void load();
 

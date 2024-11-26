@@ -15,6 +15,7 @@ Texture2D logoImageOptions;
 
 
 int tileAtlas[255];
+int toolAtlas[255];
 
 int terrainAtlas;
 int grassAtlas;
@@ -68,6 +69,13 @@ void load(){
   tileAtlas[TREE_TRUNK] = treeAtlas;
   tileAtlas[TREE_BRANCH] = treeAtlas;
   tileAtlas[TREE_TOP] = topTreeAtlas;
+
+  int swordImg = 40*3 + 32*2;
+  int pickaxeImg =  40*3;
+  int axeImg = 40*3 + 31;
+  toolAtlas[SWORD] = swordImg;
+  toolAtlas[PICKAXE] = pickaxeImg;
+  toolAtlas[AXE] = axeImg;
 
 
 }
