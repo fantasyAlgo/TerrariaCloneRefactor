@@ -75,6 +75,7 @@ void Player::render(Color player_light){
 
 void Player::renderTool(Color player_light){
   if (this->inventory[0][this->selected_item].puttable) return;
+  if (this->inventory[0][this->selected_item].toolId == EMPTY_TOOL) return;
   auto inventoryItem = this->inventory[0][this->selected_item];
   int mid_pos_x = (settings::SCREEN_WIDTH/(2*settings::BLOCK_SIZE_X))*settings::BLOCK_SIZE_X + (int)settings::offset_block_x*settings::BLOCK_SIZE_X;
   int mid_pos_y = (settings::SCREEN_HEIGHT/(2*settings::BLOCK_SIZE_Y))*settings::BLOCK_SIZE_Y - (int)settings::offset_block_y*settings::BLOCK_SIZE_Y;
@@ -107,6 +108,10 @@ void Player::inputHandler(float deltaTime){
   //std::cout << selected_item << " " << wheelMove << std::endl;
   if (wheelMove > 0) selected_item = std::min(settings::N_INVENTORY_COLUMNS-1, selected_item+1);
   if (wheelMove < 0) selected_item = std::max(0, selected_item-1);
+  for (int i = 0; i < 9; i++) {
+   if (IsKeyPressed(KEY_ONE + i))
+       selected_item = i;
+  }
 }
 
 void Player::addBlockToInventory(BlockType id){

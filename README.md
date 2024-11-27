@@ -7,6 +7,6 @@ TODO:
 - [x] Add the possibility to zoom (i guess that's the whole point of this refactor)
 - [x] Make a GUI
 - [ ] World saving
-- [ ] Add other entities
+- [ ] Add other entities (to this idiot)
 - [ ] Add crafting
 

@@ -45,6 +45,10 @@ void Game::inputHandler(float deltaTime){
   }
   if (this->state != IN_GAME) return;
   this->player.inputHandler(deltaTime);
+  int mouse_x = (settings::SCREEN_WIDTH/2 - GetMouseX());
+  int mouse_y = (settings::SCREEN_HEIGHT/2 - GetMouseY());
+  if (sqrt(mouse_x*mouse_x + mouse_y*mouse_y) > 200) return;
+
   unsigned char mapTile = map[(int)mouse_tile.x][(int)mouse_tile.y];
   if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT)){
     if ((mapTile == EMPTY || mapTile == WALL_DIRT) && player.getInventoryItem(0, player.selected_item).id != EMPTY){
@@ -128,9 +132,7 @@ void Game::renderInGameUI(){
   ImGui::SetNextWindowPos(vec);
   ImGui::Begin("Inventory", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration);
   ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
-  if (player.getShowInventory()){
-    ImGui::ShowDemoWindow();  
-  }
+  //if (player.getShowInventory()) ImGui::ShowDemoWindow();  
   for (int j = 0; j < (player.getShowInventory() ? settings::N_INVENTORY_ROWS : 1); j++) { 
     float rowY = vec.y + j * (slotSize.y + ImGui::GetStyle().ItemSpacing.y + 5.0f);
     ImGui::SetCursorScreenPos(ImVec2(vec.x, rowY));
