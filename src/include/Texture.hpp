@@ -22,6 +22,7 @@ extern int woodAtlas;
 extern int topTreeAtlas;
 
 extern int playerAtlasPos;
+extern int zombieAtlasPos;
 
 extern int tileAtlas[255];
 extern int toolAtlas[255];

@@ -18,8 +18,8 @@ private:
 public:
   std::vector<Vector2> torches;
   LightHandler();
-  bool run(const Player &player, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT]);
-  void update(Vector2 start_tile, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT]);
+  bool run(const Player &player, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float &time);
+  void update(Vector2 start_tile, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float time = 255);
 
   Color getLightValue(int tileX, int tileY, unsigned char type);
   void askForUpdate();

@@ -5,7 +5,11 @@ project(raylib_project)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 file(GLOB LIBS_SOURCE_FILES libsSource/*.cpp)
+file(GLOB SOURCE_FILES src/*.cpp)
+
+
 # Find raylib package if installed globally, otherwise set the path to Raylib manually
 find_package(raylib 4.0 QUIET) # Look for Raylib 4.0 or later
 
@@ -24,14 +28,7 @@ include_directories(include libs/)
 
 # Add executable and link Raylib
 add_executable(raylib_project 
-  src/settings.cpp
-  src/main.cpp
-  src/Game.cpp
-  src/Player.cpp
-  src/Texture.cpp
-  src/ChunkLoader.cpp
-  src/TileRenderUtil.cpp
-  src/LightHandler.cpp
+  ${SOURCE_FILES}
   ${LIBS_SOURCE_FILES}
 )
 target_link_libraries(raylib_project raylib)

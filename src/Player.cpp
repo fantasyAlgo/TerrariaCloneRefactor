@@ -25,7 +25,8 @@ void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
   if (this->force.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
     this->force.x = 0.000001f;
     this->animationFrame = 0;
-  }else if (this->force.x < 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)-1))){
+  }else if (this->force.x < 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)) || 
+    !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)-1))){
     this->force.x = -0.000001f;
     this->animationFrame = 0;
   }else if (this->isJumping == -1 && (this->force.x > 0 ? this->force.x > deltaTime*settings::PLAYER_SPEED/2 : this->force.x < -deltaTime*settings::PLAYER_SPEED/2))

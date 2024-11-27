@@ -14,7 +14,7 @@ int main(void){
   float deltaTime;
   bool showDemoWindow = true;
   float sliderValue = 0;
-  //SetTargetFPS(60);
+  SetTargetFPS(244);
   while (game.getIsRunning()){ 
     deltaTime = GetFrameTime();
     game.inputHandler(deltaTime);

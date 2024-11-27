@@ -16,7 +16,7 @@ LightHandler::LightHandler()  : isRunning(false), needsUpdate(false){
     for (int j = 0; j < settings::BLOCK_SCREEN_RATIO_Y+2; j++) 
       light_map[i][j] = 255;
 }
-bool LightHandler::run(const Player &player, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT]){
+bool LightHandler::run(const Player &player, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float &time){
   isRunning.store(true, std::memory_order_relaxed);
   float xTile, yTile;
   while (true){
@@ -24,14 +24,14 @@ bool LightHandler::run(const Player &player, unsigned char map[settings::MAP_WID
     if (needsUpdate.load(std::memory_order_relaxed)){
       yTile = floor(player.pos.y)-((float)settings::SCREEN_HEIGHT/(float)settings::BLOCK_SIZE_Y)/2-2;
       xTile = floor(player.pos.x)-((float)settings::SCREEN_WIDTH/(float)settings::BLOCK_SIZE_X)/2;
-      this->update({xTile, yTile}, map);
+      this->update({xTile, yTile}, map, time);
       needsUpdate.store(false, std::memory_order_release); // Reset after processing
     }
   }
   std::cout << "exploded" << std::endl;
   return true;
 }
-void LightHandler::update(Vector2 start_tile, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT]){
+void LightHandler::update(Vector2 start_tile, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float time){
   //int map_columns[settings::MAP_WIDTH];
   int light_value;
   int highest_empty = -1;
@@ -39,9 +39,9 @@ void LightHandler::update(Vector2 start_tile, unsigned char map[settings::MAP_WI
   std::vector<Vector2> torch_sources;
   unsigned char light_map_copy[(int)settings::BLOCK_SCREEN_RATIO_X + 3][(int)settings::BLOCK_SCREEN_RATIO_Y + 3];
   //std::cout << "is it updating?: " << start_tile.x << " " << start_tile.y << std::endl;
-
+  //std::cout << "time: " << time << std::endl;
   for (int i = 0; i < settings::BLOCK_SCREEN_RATIO_X+2; i++) {
-    light_value = 255;
+    light_value = time;
     highest_empty = -1;
     for (int j = 0; j < settings::MAP_HEIGHT; j++) {
       unsigned char map_tile = map[(int)start_tile.x + i][j];

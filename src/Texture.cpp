@@ -30,6 +30,7 @@ int waterAtlas;
 int topTreeAtlas;
 
 int playerAtlasPos;
+int zombieAtlasPos;
 void load(){
   all_atlas = LoadTexture("src/Assets/spritesheet.png");
   item_entities_atlas = LoadTexture("src/Assets/item_entity_atlas.png");
@@ -50,6 +51,7 @@ void load(){
 
   grassAtlas = 0;
   playerAtlasPos = 326;
+  zombieAtlasPos = 326 + 380;
 
   tileAtlas[DIRT] = terrainAtlas;
   tileAtlas[GRASS] = grassAtlas;

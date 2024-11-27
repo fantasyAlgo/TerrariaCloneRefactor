@@ -27,15 +27,25 @@ void Game::init(){
   isChunkLoaded[(int)this->player.getPos().x/settings::CHUNK_SIZE ] = true;
   //std::cout << "ll: " << this->player.getPos().x/settings::CHUNK_SIZE << std::endl;
   ChunkLoader::loadChunk(this->map, this->player.getPos().x/settings::CHUNK_SIZE , this->noise, this->noise2d);
-  this->light_thread = std::async(std::launch::async, &LightHandler::run, &lightHandler, std::ref(this->player), this->map);
+  this->time = 254.0f;
+  this->light_thread = std::async(std::launch::async, &LightHandler::run, &lightHandler, std::ref(this->player), this->map, this->time);
   this->state = HOME;
   this->is_running = true;
+  this->first_zombie.init(&this->player.pos);
 }
 
 void Game::update(float deltaTime){
+
   if (this->state != GameState::IN_GAME) return;
+  this->time -= 100.0f*deltaTime;
+  //std::cout << this->time << " " << deltaTime << std::endl;
+  if (this->time <= 0) this->time = 255;
+
   player.update(map, deltaTime);
   mouse_pos = GetMousePosition();
+  first_zombie.update(map, deltaTime);
+  first_zombie.moveTowardsTarget(deltaTime);
+
   ChunkLoader::loadNearbyChunks(this->isChunkLoaded, this->map, this->player.getPos().x/settings::CHUNK_SIZE, this->noise, this->noise2d);
 }
 void Game::inputHandler(float deltaTime){
@@ -71,7 +81,7 @@ void Game::render(){
   float player_background_y = (player.pos.y/settings::MAP_HEIGHT/4)*838;
   //std::cout << "player: " << player.pos.y << std::endl;
   DrawTexturePro(Textures::backgroundForest, {0,player_background_y, 1024, (float)settings::SCREEN_HEIGHT/3}, 
-                 {0,0, (float)settings::SCREEN_WIDTH, (float)settings::SCREEN_HEIGHT}, {0,0}, 0, WHITE);
+                 {0,0, (float)settings::SCREEN_WIDTH, (float)settings::SCREEN_HEIGHT}, {0,0}, 0, {(int)time, (int)time, (int)time, 255});
   Vector2 starting_point = {(floor(this->player.getPos().x) - this->player.getPos().x)*settings::BLOCK_SIZE_X, 
                             (floor(this->player.getPos().y) - this->player.getPos().y)*settings::BLOCK_SIZE_Y};
 
@@ -103,6 +113,7 @@ void Game::render(){
   Color player_color = lightHandler.getLightValue(settings::BLOCK_SCREEN_RATIO_X/2, settings::BLOCK_SCREEN_RATIO_Y/2, STONE);
   this->player.render(player_color);
   this->player.renderTool(player_color);
+  this->first_zombie.render(lightHandler);
 }
 
 
