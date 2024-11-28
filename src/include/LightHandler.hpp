@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Blocks.h"
-#include "Player.hpp"
 #include "Settings.hpp"
 #include <atomic>
 #include <mutex>
@@ -18,7 +17,7 @@ private:
 public:
   std::vector<Vector2> torches;
   LightHandler();
-  bool run(const Player &player, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float &time);
+  bool run(bool *is_running, Vector2 *pos, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float &time);
   void update(Vector2 start_tile, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float time = 255);
 
   Color getLightValue(int tileX, int tileY, unsigned char type);

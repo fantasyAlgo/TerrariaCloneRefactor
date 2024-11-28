@@ -8,6 +8,7 @@
 #include <future>
 #include <unordered_map>
 #include "imgui.h"
+#include "EnemyHandler.hpp"
 
 enum GameState {
   HOME,
@@ -32,8 +33,8 @@ private:
   std::future<bool> light_thread;
   LightHandler lightHandler;
   std::unordered_map<int, bool> isChunkLoaded; // i mean do i need to explain this? do i really have enough time for this, thy goddes of mine, descended upon heaven to save us from our sins?
-  Zombie first_zombie;
-
+  EnemyHandler enemyHandler;
+  
 public:
   Game();
   ~Game();

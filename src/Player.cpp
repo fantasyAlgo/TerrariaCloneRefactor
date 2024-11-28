@@ -7,11 +7,15 @@
 #include <cmath>
 #include <iostream>
 #include <raylib.h>
+#include <raymath.h>
 
+int sign(float value) {return value > 0 ? 1 : -1;}
 
 Player::Player(){
   this->pos = {400, 250};
   selected_item = 0;
+  this->resitanceHit = 10.0f;
+  this->externalForce = {0.0f, 0.0f};
   this->toolAnimation = 0;
   this->life = 1.0f;
   for (int i = 0; i < settings::N_INVENTORY_ROWS; i++) 
@@ -23,12 +27,16 @@ Player::Player(){
   inventory[0][2] = {EMPTY, 0, AXE, 1};
 }
 void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
-  if (this->force.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
+  this->resitanceHit -= 10*deltaTime;
+  Vector2 totalForce = Vector2Add(force, externalForce);
+  if (totalForce.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
     this->force.x = 0.000001f;
     this->animationFrame = 0;
-  }else if (this->force.x < 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)) || 
+    this->externalForce.x = 0.0f;
+  }else if (totalForce.x < 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)) || 
     !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)-1))){
     this->force.x = -0.000001f;
+    this->externalForce.x = 0.0f;
     this->animationFrame = 0;
   }else if (this->isJumping == -1 && (this->force.x > 0 ? this->force.x > deltaTime*settings::PLAYER_SPEED/2 : this->force.x < -deltaTime*settings::PLAYER_SPEED/2))
     this->animationFrame += deltaTime*10.0f;
@@ -44,15 +52,23 @@ void Player::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
   if (!TileRenderUtil::isCollisionTileHelper(map, round(pos.x), round(pos.y)))
     this->force.y = -30;
 
-  pos.y += deltaTime*this->force.y;
-  pos.x += this->force.x;
+  pos.y += deltaTime*(this->force.y+this->externalForce.y);
+  pos.x += this->force.x + this->externalForce.x;
 
   this->force.y += deltaTime*100;
   this->force.x *= 0.8;
 
+  if (this->externalForce.x != 0)
+    this->externalForce.x -= this->externalForce.x > 0 ? 0.1*deltaTime : -0.1*deltaTime;
+  if (this->externalForce.y != 0)
+    this->externalForce.y -= this->externalForce.y > 0 ? 0.1*deltaTime : -0.1*deltaTime;
+
   if (this->toolAnimation > -30)
     this->toolAnimation += deltaTime*300.0f;
-  if (this->toolAnimation >= 90) this->toolAnimation = -30;
+  if (this->toolAnimation >= 90){
+    this->toolAnimation = -30;
+    this->hasHit = false;
+  }
 
 }
 void Player::render(Color player_light){
@@ -137,6 +153,26 @@ void Player::reduceSelectedBlock(){
   this->inventory[0][this->selected_item].amount -= 1;
   if (this->inventory[0][this->selected_item].amount <= 0) this->inventory[0][this->selected_item] = {EMPTY, 0, EMPTY_TOOL, 0};
 }
+
+bool Player::isColliding(Zombie zombie){
+  Rectangle playerRect = {pos.x, pos.y, (float)1, (float)2.0f*2.0f};
+  Rectangle zombieRect = {zombie.pos.x, zombie.pos.y, (float)1.0f, (float)2.0f*2.0f};
+  //std::cout << playerRect.x << " " << zombieRect.x << std::endl;
+  return CheckCollisionRecs(playerRect, zombieRect);
+}
+bool Player::isCollidingSwing(Zombie zombie){
+  return !hasHit && isSwinging() && Vector2Distance(pos, zombie.pos) < 2.5f && (sign(force.x)==1 ? pos.x < zombie.pos.x : pos.x > zombie.pos.x); 
+}
+void Player::hit(Zombie zombie){
+  if (this->resitanceHit >= 0) return;
+  this->externalForce.x = pos.x > zombie.pos.x ? 0.08: -0.08f;
+  this->externalForce.y = 0.1f;
+  life -= 0.1;
+  this->resitanceHit = 20.0f;
+}
+
+
+
 void Player::initAction(){
   if (this->toolAnimation == -30)
     this->toolAnimation = -29.99;
@@ -146,7 +182,6 @@ void Player::swapShowInventory(Vector2 ps1, Vector2 ps2){
   auto tmp = this->inventory[(int)ps1.y][(int)ps1.x];
   this->inventory[(int)ps1.y][(int)ps1.x] = this->inventory[(int)ps2.y][(int)ps2.x];
   this->inventory[(int)ps2.y][(int)ps2.x] = tmp;
-
 }
 
 Vector2 Player::getPos(){
@@ -160,4 +195,8 @@ PlayerItem Player::getInventoryItem(int i, int j){
 }
 float Player::getLife(){
   return this->life;
+}
+
+bool Player::isSwinging(){
+  return this->toolAnimation > -30;
 }

@@ -12,21 +12,25 @@ Zombie::Zombie(){
   this->force = {0,0};
   this->animationFrame = 0;
   this->needsJump = false;
-  this->life = 1.0f
+  this->life = 1.0f;
 }
-void Zombie::init(Vector2 *new_target){
+void Zombie::init(Vector2 *new_target, Vector2 pos){
   this->target = new_target;
+  this->pos = pos;
 }
 
 void Zombie::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
 
-  if (this->force.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
+  Vector2 totalForce = Vector2Add(force, externalForce);
+  if (totalForce.x > 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)) || !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x)+1, floor(pos.y)-1))){
     this->force.x = 0.000001f;
     this->animationFrame = 0;
+    this->externalForce.x = 0.0f;
     this->needsJump = true;
-  }else if (this->force.x < 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)) || 
+  }else if (totalForce.x < 0 && (!TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)) || 
     !TileRenderUtil::isCollisionTileHelper(map, floor(pos.x), floor(pos.y)-1))){
     this->force.x = -0.000001f;
+    this->externalForce.x = 0.0f;
     this->animationFrame = 0;
     this->needsJump = true;
   }else if (this->isJumping == -1 && (this->force.x > 0 ? this->force.x > deltaTime*settings::PLAYER_SPEED/2 : this->force.x < -deltaTime*settings::PLAYER_SPEED/2))
@@ -37,19 +41,22 @@ void Zombie::update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime){
     this->force.y = 0;
     this->isJumping = -1;
   }
-
   if (!TileRenderUtil::isCollisionTileHelper(map, round(pos.x), floor(pos.y)-1))
     this->force.y = 0.2;
 
   if (!TileRenderUtil::isCollisionTileHelper(map, round(pos.x), round(pos.y)))
     this->force.y = -30;
 
-  pos.y += deltaTime*this->force.y;
-  pos.x += this->force.x;
+  pos.y += deltaTime*(this->force.y+this->externalForce.y);
+  pos.x += this->force.x + this->externalForce.x;
 
   this->force.y += deltaTime*100;
   this->force.x *= 0.8;
 
+  if (this->externalForce.x != 0)
+    this->externalForce.x -= this->externalForce.x > 0 ? 0.1*deltaTime : -0.1*deltaTime;
+  if (this->externalForce.y != 0)
+    this->externalForce.y -= this->externalForce.y > 0 ? 0.1*deltaTime : -0.1*deltaTime;
 
 }
 void Zombie::moveTowardsTarget(float deltaTime){
@@ -70,6 +77,7 @@ void Zombie::render(LightHandler &lightHandler){
   Rectangle tile_pos = {Textures::zombieAtlasPos+((int)animationFrame%4)*34.0f, 0, force.x > 0.0f ? -34.0f : 34.0f, 46.0f};
   //std::cout << pos.x << " " << pos.y << " || " << animationFrame << std::endl;
   //DrawRectangle(int posX, int posY, int width, int height, Color color)
+  DrawRectangle(zombie_pos_x- settings::BLOCK_SIZE_X*0.25f , zombie_pos_y - settings::BLOCK_SIZE_Y*0.5f, this->life*20, 4, RED);
   DrawTexturePro(Textures::item_entities_atlas, 
                  tile_pos,
                  {(float)zombie_pos_x -(float)settings::BLOCK_SIZE_X*0.25f, (float)zombie_pos_y- (float)settings::BLOCK_SIZE_Y*0.25f, 
@@ -79,6 +87,11 @@ void Zombie::render(LightHandler &lightHandler){
   
 }
 
+void Zombie::hit(Vector2 player_pos){
+  this->externalForce.x = player_pos.x > this->pos.x ? -0.09f: 0.09f;
+  this->externalForce.y = 0.1f;
+  life -= 0.1;
+}
 Vector2 Zombie::getPos(){
   return this->pos;
 }

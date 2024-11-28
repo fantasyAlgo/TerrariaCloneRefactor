@@ -2,6 +2,7 @@
 
 #include "Blocks.h"
 #include "Settings.hpp"
+#include "Zombie.hpp"
 #include <raylib.h>
 #include <raymath.h>
 #include <utility>
@@ -12,13 +13,17 @@ private:
   bool whichDir;
   float animationFrame;
   Vector2 force;
+  Vector2 externalForce;
+
   bool isInventoryOpen;
   PlayerItem inventory[settings::N_INVENTORY_ROWS][settings::N_INVENTORY_COLUMNS+1];
   float life;
+  float resitanceHit; 
 public:
   Vector2 pos;
   int selected_item;
   int slotIndices[2];
+  bool hasHit = false;
   Player();
   void update(unsigned char map[][settings::MAP_HEIGHT], float deltaTime);
   void render(Color player_light);
@@ -28,6 +33,10 @@ public:
 
   // tool movement
   void initAction();
+  // zombie stuff
+  bool isColliding(Zombie zombie);
+  bool isCollidingSwing(Zombie zombie);
+  void hit(Zombie zombie);
 
   void addBlockToInventory(BlockType id);
   void reduceSelectedBlock();
@@ -37,4 +46,5 @@ public:
   bool getShowInventory();
   PlayerItem getInventoryItem(int i, int j);
   float getLife();
+  bool isSwinging();
 };

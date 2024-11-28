@@ -14,6 +14,7 @@
 #include <iostream>
 #include <ostream>
 #include <raylib.h>
+#include <raymath.h>
 #include <sched.h>
 #include <string>
 
@@ -30,24 +31,25 @@ void Game::init(){
   //std::cout << "ll: " << this->player.getPos().x/settings::CHUNK_SIZE << std::endl;
   ChunkLoader::loadChunk(this->map, this->player.getPos().x/settings::CHUNK_SIZE , this->noise, this->noise2d);
   this->time = 254.0f;
-  this->light_thread = std::async(std::launch::async, &LightHandler::run, &lightHandler, std::ref(this->player), this->map, std::ref(this->time));
+  this->light_thread = std::async(std::launch::async, &LightHandler::run, &lightHandler, &this->is_running, &this->player.pos, this->map, std::ref(this->time));
   this->state = HOME;
   this->is_running = true;
-  this->first_zombie.init(&this->player.pos);
+  //this->enemyHandler.addEnemy(&this->player.pos);
 }
 
 void Game::update(float deltaTime){
 
   if (this->state != GameState::IN_GAME) return;
-  this->time -= (this->whichCycle ? 1 : -1 ) * 6.0f*deltaTime;
-  //std::cout << this->time << " " << deltaTime << std::endl;
+
+  this->time -= (this->whichCycle ? 1 : -1 ) * 4.0f*deltaTime;
   if (this->time < 0) this->whichCycle = false;
   if (this->time > 255) this->whichCycle = true;
+  if (this->time < 50 && (rand()%10000) < 5)
+    this->enemyHandler.addEnemy(&this->player.pos);
 
   player.update(map, deltaTime);
   mouse_pos = GetMousePosition();
-  first_zombie.update(map, deltaTime);
-  first_zombie.moveTowardsTarget(deltaTime);
+  this->enemyHandler.update(map, player, deltaTime);
 
   ChunkLoader::loadNearbyChunks(this->isChunkLoaded, this->map, this->player.getPos().x/settings::CHUNK_SIZE, this->noise, this->noise2d);
 }
@@ -116,7 +118,7 @@ void Game::render(){
   Color player_color = lightHandler.getLightValue(settings::BLOCK_SCREEN_RATIO_X/2, settings::BLOCK_SCREEN_RATIO_Y/2, STONE);
   this->player.render(player_color);
   this->player.renderTool(player_color);
-  this->first_zombie.render(lightHandler);
+  this->enemyHandler.render(lightHandler);
 }
 
 
@@ -201,7 +203,7 @@ void Game::renderInGameUI(){
         if (payload != nullptr){
           IM_ASSERT(payload->DataSize == sizeof(player.slotIndices));
           int* payload_n = (int*) payload->Data;
-          std::cout << "bob: " << payload_n[0] << " " << payload_n[1] << std::endl;
+          //std::cout << "bob: " << payload_n[0] << " " << payload_n[1] << std::endl;
           player.swapShowInventory({(float)payload_n[1], (float)payload_n[0]}, {(float)i,(float)j});
         }
         ImGui::EndDragDropTarget();

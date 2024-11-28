@@ -16,14 +16,14 @@ LightHandler::LightHandler()  : isRunning(false), needsUpdate(false){
     for (int j = 0; j < settings::BLOCK_SCREEN_RATIO_Y+2; j++) 
       light_map[i][j] = 255;
 }
-bool LightHandler::run(const Player &player, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float &time){
+bool LightHandler::run(bool *is_running, Vector2 *pos, unsigned char map[settings::MAP_WIDTH][settings::MAP_HEIGHT], float &time){
   isRunning.store(true, std::memory_order_relaxed);
   float xTile, yTile;
-  while (true){
-    //std::cout << "is running" << std::endl; 
+  while (is_running){
+    //std::cout << pos->x << " " << pos->y << std::endl; 
     if (needsUpdate.load(std::memory_order_relaxed)){
-      yTile = floor(player.pos.y)-((float)settings::SCREEN_HEIGHT/(float)settings::BLOCK_SIZE_Y)/2-2;
-      xTile = floor(player.pos.x)-((float)settings::SCREEN_WIDTH/(float)settings::BLOCK_SIZE_X)/2;
+      yTile = floor(pos->y)-((float)settings::SCREEN_HEIGHT/(float)settings::BLOCK_SIZE_Y)/2-2;
+      xTile = floor(pos->x)-((float)settings::SCREEN_WIDTH/(float)settings::BLOCK_SIZE_X)/2;
       this->update({xTile, yTile}, map, time);
       needsUpdate.store(false, std::memory_order_release); // Reset after processing
     }
