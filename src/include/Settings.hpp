@@ -28,6 +28,7 @@ constexpr int NOISE_VARIABILITY = 40;
 
 constexpr int N_INVENTORY_ROWS  = 4;
 constexpr int N_INVENTORY_COLUMNS  = 9;
+constexpr int N_HEARTS = 6;
 
 void init_settings();
 void setWindowSettings(int width, int height);

@@ -13,6 +13,7 @@ Player::Player(){
   this->pos = {400, 250};
   selected_item = 0;
   this->toolAnimation = 0;
+  this->life = 1.0f;
   for (int i = 0; i < settings::N_INVENTORY_ROWS; i++) 
     for (int j = 0; j < settings::N_INVENTORY_COLUMNS+1; j++) 
       inventory[i][j] = {EMPTY, 1, EMPTY_TOOL, 0};
@@ -157,4 +158,6 @@ bool Player::getShowInventory(){
 PlayerItem Player::getInventoryItem(int i, int j){
   return inventory[i][j];
 }
-
+float Player::getLife(){
+  return this->life;
+}

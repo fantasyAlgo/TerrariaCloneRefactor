@@ -24,6 +24,7 @@ private:
   GameState state;
   bool is_running;
   float time;
+  bool whichCycle = 0;
 
   ValueNoise1D noise; // 1d perlin noise (like yeah...)
   PerlinNoise noise2d; // 2d perlin noise (like yeah.)

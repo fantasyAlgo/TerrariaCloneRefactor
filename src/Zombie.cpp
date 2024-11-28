@@ -12,6 +12,7 @@ Zombie::Zombie(){
   this->force = {0,0};
   this->animationFrame = 0;
   this->needsJump = false;
+  this->life = 1.0f
 }
 void Zombie::init(Vector2 *new_target){
   this->target = new_target;

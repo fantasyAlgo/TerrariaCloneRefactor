@@ -14,7 +14,7 @@ private:
   Vector2 force;
   bool isInventoryOpen;
   PlayerItem inventory[settings::N_INVENTORY_ROWS][settings::N_INVENTORY_COLUMNS+1];
-
+  float life;
 public:
   Vector2 pos;
   int selected_item;
@@ -36,4 +36,5 @@ public:
   Vector2 getPos();
   bool getShowInventory();
   PlayerItem getInventoryItem(int i, int j);
+  float getLife();
 };

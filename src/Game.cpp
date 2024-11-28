@@ -9,6 +9,7 @@
 #include "rlImGui.h"
 
 #include <cmath>
+#include <functional>
 #include <future>
 #include <iostream>
 #include <ostream>
@@ -24,11 +25,12 @@ void Game::init(){
   Textures::load();
   this->noise = ValueNoise1D();
   this->noise2d = PerlinNoise();
+  this->whichCycle = false;
   isChunkLoaded[(int)this->player.getPos().x/settings::CHUNK_SIZE ] = true;
   //std::cout << "ll: " << this->player.getPos().x/settings::CHUNK_SIZE << std::endl;
   ChunkLoader::loadChunk(this->map, this->player.getPos().x/settings::CHUNK_SIZE , this->noise, this->noise2d);
   this->time = 254.0f;
-  this->light_thread = std::async(std::launch::async, &LightHandler::run, &lightHandler, std::ref(this->player), this->map, this->time);
+  this->light_thread = std::async(std::launch::async, &LightHandler::run, &lightHandler, std::ref(this->player), this->map, std::ref(this->time));
   this->state = HOME;
   this->is_running = true;
   this->first_zombie.init(&this->player.pos);
@@ -37,9 +39,10 @@ void Game::init(){
 void Game::update(float deltaTime){
 
   if (this->state != GameState::IN_GAME) return;
-  this->time -= 100.0f*deltaTime;
+  this->time -= (this->whichCycle ? 1 : -1 ) * 6.0f*deltaTime;
   //std::cout << this->time << " " << deltaTime << std::endl;
-  if (this->time <= 0) this->time = 255;
+  if (this->time < 0) this->whichCycle = false;
+  if (this->time > 255) this->whichCycle = true;
 
   player.update(map, deltaTime);
   mouse_pos = GetMousePosition();
@@ -81,7 +84,7 @@ void Game::render(){
   float player_background_y = (player.pos.y/settings::MAP_HEIGHT/4)*838;
   //std::cout << "player: " << player.pos.y << std::endl;
   DrawTexturePro(Textures::backgroundForest, {0,player_background_y, 1024, (float)settings::SCREEN_HEIGHT/3}, 
-                 {0,0, (float)settings::SCREEN_WIDTH, (float)settings::SCREEN_HEIGHT}, {0,0}, 0, {(int)time, (int)time, (int)time, 255});
+                 {0,0, (float)settings::SCREEN_WIDTH, (float)settings::SCREEN_HEIGHT}, {0,0}, 0, {(unsigned char )time, (unsigned char)time, (unsigned char)time, 255});
   Vector2 starting_point = {(floor(this->player.getPos().x) - this->player.getPos().x)*settings::BLOCK_SIZE_X, 
                             (floor(this->player.getPos().y) - this->player.getPos().y)*settings::BLOCK_SIZE_Y};
 
@@ -141,7 +144,7 @@ void Game::renderInGameUI(){
 
   ImVec2 vec = ImVec2(settings::SCREEN_WIDTH/256, slotSize.y-settings::SCREEN_HEIGHT/32);
   ImGui::SetNextWindowPos(vec);
-  ImGui::Begin("Inventory", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration);
+  ImGui::Begin("Inventory", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration );
   ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
   //if (player.getShowInventory()) ImGui::ShowDemoWindow();  
   for (int j = 0; j < (player.getShowInventory() ? settings::N_INVENTORY_ROWS : 1); j++) { 
@@ -219,6 +222,14 @@ void Game::renderInGameUI(){
       if (i < settings::N_INVENTORY_COLUMNS-1)
         ImGui::SetCursorScreenPos(ImVec2(slotPos.x + slotSize.x + ImGui::GetStyle().ItemSpacing.x, slotPos.y));
     }
+  }
+  // hearth
+  ImVec2 vec2 = ImVec2(settings::SCREEN_WIDTH-32*settings::N_HEARTS, slotSize.y-settings::SCREEN_HEIGHT/32);
+  for (float i = 1; i < settings::N_HEARTS+1; i++) {
+    if (player.getLife() < i/(float)settings::N_HEARTS) break;
+    ImGui::SetCursorScreenPos(ImVec2(vec2.x, vec2.y));
+    rlImGuiImageRect(&Textures::item_entities_atlas, 32, 32, {842, 0, 16, 16});
+    vec2.x += 32;
   }
 
   ImGui::PopStyleVar();
@@ -345,13 +356,15 @@ void Game::renderTile(int i, int j, int xTile, int yTile, unsigned char type, Ve
     }
     DrawTexturePro(Textures::all_atlas, 
                    tileRect,
-                   {(float)i, (float)j, (float)settings::BLOCK_SIZE_X*1.2f, (float)settings::BLOCK_SIZE_Y*1.2f+1}, {0,0}, 0, type == WALL_DIRT ? GRAY : WHITE);
+                   {(float)i, (float)j, (float)settings::BLOCK_SIZE_X*1.2f, (float)settings::BLOCK_SIZE_Y*1.2f+1}, {0,0}, 0,
+                   lightHandler.getLightValue((i-starting_point.x)/settings::BLOCK_SIZE_X, (j-starting_point.y)/settings::BLOCK_SIZE_Y, type));
 
   }else if (type != 0){
     DrawTexturePro(Textures::all_atlas, 
                    {(float)Textures::topTreeAtlas, 0, 82, 82},
                    {(float)i- settings::BLOCK_SIZE_X*2.3f, (float)j-(float)settings::BLOCK_SIZE_Y*1.9f, 
-                   (float)settings::BLOCK_SIZE_X*6, (float)settings::BLOCK_SIZE_Y*5}, {0,0}, 0, WHITE);
+                   (float)settings::BLOCK_SIZE_X*6, (float)settings::BLOCK_SIZE_Y*5}, {0,0}, 0, 
+                   lightHandler.getLightValue((i-starting_point.x)/settings::BLOCK_SIZE_X, (j-starting_point.y)/settings::BLOCK_SIZE_Y, type));
 
   }
 

@@ -14,6 +14,7 @@ private:
   bool needsJump;
   Vector2 force;
   Vector2 *target;
+  float life;
 
 public:
   Vector2 pos;
