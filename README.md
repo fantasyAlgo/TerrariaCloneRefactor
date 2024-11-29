@@ -12,7 +12,7 @@ cmake ..
 build
 ./TerrariaFake
 ```
-## Features
+##  Features
 - Lighting, this is made on another thread
 - Block placing, you can place and collect blocks, including torches (there are not a lot really)
 - Zombies at night
