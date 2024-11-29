@@ -15,8 +15,8 @@ namespace settings {
 
 void init_settings(){
 
-  SCREEN_WIDTH = 1920.0f *(0.75f);
-  SCREEN_HEIGHT = 1080.0f *(0.75f);
+  SCREEN_WIDTH = 1920.0f; //*(0.75f);
+  SCREEN_HEIGHT = 1080.0f; //*(0.75f);
   BLOCK_SIZE_X = 20;
   BLOCK_SIZE_Y = 20;
 

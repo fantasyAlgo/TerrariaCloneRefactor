@@ -44,7 +44,7 @@ void Game::update(float deltaTime){
   this->time -= (this->whichCycle ? 1 : -1 ) * 4.0f*deltaTime;
   if (this->time < 0) this->whichCycle = false;
   if (this->time > 255) this->whichCycle = true;
-  if (this->time < 255 && (rand()%10000) < 2000)
+  if (this->time < 50 && (rand()%10000) < 10)
     this->enemyHandler.addEnemy(&this->player.pos);
 
   player.update(map, deltaTime);
@@ -144,8 +144,10 @@ void Game::renderInGameUI(){
   Vector2 slotSize = {35, 35};
   Vector2 imageSize = {30, 30};
 
-  ImVec2 vec = ImVec2(settings::SCREEN_WIDTH/256, slotSize.y-settings::SCREEN_HEIGHT/32);
+  ImVec2 vec = ImVec2(settings::SCREEN_WIDTH/256, slotSize.y-settings::SCREEN_HEIGHT/64);
   ImGui::SetNextWindowPos(vec);
+  ImGui::SetNextWindowSize(ImVec2(settings::SCREEN_WIDTH, slotSize.y*(settings::N_INVENTORY_ROWS+1)));
+
   ImGui::Begin("Inventory", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration );
   ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
   //if (player.getShowInventory()) ImGui::ShowDemoWindow();  
@@ -226,7 +228,7 @@ void Game::renderInGameUI(){
     }
   }
   // hearth
-  ImVec2 vec2 = ImVec2(settings::SCREEN_WIDTH-32*settings::N_HEARTS, slotSize.y-settings::SCREEN_HEIGHT/32);
+  ImVec2 vec2 = ImVec2(settings::SCREEN_WIDTH-32*settings::N_HEARTS, slotSize.y-settings::SCREEN_HEIGHT/64);
   for (float i = 1; i < settings::N_HEARTS+1; i++) {
     if (player.getLife() < i/(float)settings::N_HEARTS) break;
     ImGui::SetCursorScreenPos(ImVec2(vec2.x, vec2.y));
