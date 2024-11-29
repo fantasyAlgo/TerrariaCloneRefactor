@@ -1,5 +1,5 @@
 # Terraria basic clone in raylib and rlImgui
-
+![imageTerraria](https://github.com/user-attachments/assets/e1336434-4a49-4f0b-aca7-2602dc428e5c)
 ## Prerequisites
 - CMake
 - Raylib, Cmake will automatically install it if you don't have it locally
