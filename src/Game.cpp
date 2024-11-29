@@ -44,7 +44,7 @@ void Game::update(float deltaTime){
   this->time -= (this->whichCycle ? 1 : -1 ) * 4.0f*deltaTime;
   if (this->time < 0) this->whichCycle = false;
   if (this->time > 255) this->whichCycle = true;
-  if (this->time < 50 && (rand()%10000) < 5)
+  if (this->time < 255 && (rand()%10000) < 2000)
     this->enemyHandler.addEnemy(&this->player.pos);
 
   player.update(map, deltaTime);

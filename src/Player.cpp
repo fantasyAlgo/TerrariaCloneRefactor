@@ -21,7 +21,7 @@ Player::Player(){
   for (int i = 0; i < settings::N_INVENTORY_ROWS; i++) 
     for (int j = 0; j < settings::N_INVENTORY_COLUMNS+1; j++) 
       inventory[i][j] = {EMPTY, 1, EMPTY_TOOL, 0};
-  inventory[settings::N_INVENTORY_ROWS-1][settings::N_INVENTORY_COLUMNS-1] = {TORCH, 1, EMPTY_TOOL, 10};
+  inventory[settings::N_INVENTORY_ROWS-1][settings::N_INVENTORY_COLUMNS-1] = {TORCH, 1, EMPTY_TOOL, 100};
   inventory[0][0] = {EMPTY, 0, SWORD, 1};
   inventory[0][1] = {EMPTY, 0, PICKAXE, 1};
   inventory[0][2] = {EMPTY, 0, AXE, 1};
